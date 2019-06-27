@@ -52,20 +52,24 @@ func HasElem(s interface{}, elem interface{}) bool {
 //SetKeys you can specify keys for signing transactions.
 func (client *Client) SetKeys(keys *Keys) {
 	client.CurrentKeys = keys
-	//if(client.CurrentKeys == nil){
-	//	client.CurrentKeys = keys
-	//}else {
-	//	currentKeys := client.CurrentKeys
-	//	kk := *currentKeys
-	//	keyList := *keys
-	//	for _, k := range keyList.OKey {
-	//		if (HasElem(kk.OKey, k)) {
-	//			continue
-	//		}
-	//		currentKeys.OKey = append(currentKeys.OKey, k)
-	//	}
-	//	client.CurrentKeys = currentKeys
-	//}
+}
+
+func (client *Client) GetPrivateKey() string {
+	if client.CurrentKeys != nil {
+		for _, privKey := range client.CurrentKeys.OKey {
+			return  privKey
+		}
+	}
+	return ""
+}
+
+func (client *Client) GetPublicKey() string {
+	if client.CurrentKeys != nil {
+		for _, privKey := range client.CurrentKeys.OKey {
+			return CreatePublicKey(ADDRESS_PREFIX, privKey)
+		}
+	}
+	return ""
 }
 
 //SigningKeys returns the key from the CurrentKeys
@@ -93,8 +97,8 @@ func (client *Client) SigningKeys(trx types.Operation) ([][]byte, error) {
 	return keys, nil
 }
 
-//GetPrivateKey generates a private key based on the specified parameters.
-func GetPrivateKey(user, role, password string) string {
+//CreatePrivateKey generates a private key based on the specified parameters.
+func CreatePrivateKey(user, role, password string) string {
 	new_password := password + Wallet_.Salt;
 	hashSha256 := sha256.Sum256([]byte(user + role + new_password))
 	pk := append([]byte{0x80}, hashSha256[:]...)
@@ -104,8 +108,8 @@ func GetPrivateKey(user, role, password string) string {
 	return base58.Encode(b58)
 }
 
-//GetPublicKey generates a public key based on the prefix and the private key.
-func GetPublicKey(prefix, privatekey string) string {
+//CreatePublicKey generates a public key based on the prefix and the private key.
+func CreatePublicKey(prefix, privatekey string) string {
 	b58 := base58.Decode(privatekey)
 	tpk := b58[:len(b58)-4]
 	chs := b58[len(b58)-4:]

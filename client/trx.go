@@ -1,13 +1,11 @@
 package client
 
 import (
-	"encoding/hex"
-	"errors"
-	"fmt"
-	"time"
 	"beowulf-go/api"
 	"beowulf-go/transactions"
 	"beowulf-go/types"
+	"errors"
+	"time"
 )
 
 //BResp of response when sending a transaction.
@@ -89,8 +87,8 @@ func (client *Client) SendTrx(strx []types.Operation) (*BResp, error) {
 	}
 	//if resp != nil && !client.AsyncProtocol {
 	if resp != nil{
-		txIdRes, _ := hex.DecodeString(resp.ID)
-		fmt.Println(txIdRes)
+		//txIdRes, _ := hex.DecodeString(resp.ID)
+		//fmt.Println(txIdRes)
 		if(txId != resp.ID){
 			return nil, errors.New("TransactionID is not mapped")
 		}

@@ -3,7 +3,6 @@ package client
 import (
 	"crypto/sha512"
 	"encoding/json"
-	"fmt"
 	"github.com/pkg/errors"
 	"io/ioutil"
 	"math/rand"
@@ -49,6 +48,12 @@ type Wallet struct{
 	Name	   string `json:"name"`
 }
 
+type WalletData struct {
+	Name 		string `json:"name"`
+	PrivateKey 	string `json:"private_key"`
+	PublicKey 	string `json:"public_key"`
+}
+
 func isNew() bool {
 	return len(Wallet_.CipherKeys) == 0
 }
@@ -61,7 +66,7 @@ func lock() error{
 	if(isLocked()){
 		return errors.New("The wallet must be unlocked before the password can be set")
 	}
-	err := encryptKeys();
+	err := encryptKeys()
 	if err != nil{
 		return err
 	}
@@ -108,8 +113,8 @@ func (client *Client) SetPassword(password string) error{
 			return errors.New("The wallet must be unlocked before the password can be set")
 		}
 	}
-	salt := randStringBytes(16);
-	new_password := password + salt;
+	salt := randStringBytes(16)
+	new_password := password + salt
 	c := sha512.Sum512([]byte(new_password))
 	Checksum_ = c[:]
 	Wallet_.Salt = salt
@@ -134,8 +139,8 @@ func (client *Client) LoadWallet(wallet_filename string) bool{
 	if err != nil{
 		return false
 	}
-	fmt.Println(Wallet_)
-	return true;
+	//fmt.Println(Wallet_)
+	return true
 }
 
 func saveWallet(wallet_filename string) error{
@@ -145,7 +150,7 @@ func saveWallet(wallet_filename string) error{
 // This approach lessens the risk of a partially written wallet
 // if exceptions are thrown in serialization
 //
-	err := encryptKeys();
+	err := encryptKeys()
 	if err != nil{
 		return err
 	}
@@ -164,7 +169,7 @@ func saveWallet(wallet_filename string) error{
 }
 
 func import_key(wif_key, prefix string) bool{
-	pubKey := GetPublicKey(prefix, wif_key)
+	pubKey := CreatePublicKey(prefix, wif_key)
 	Keys_[pubKey] = wif_key
 	return true
 }
@@ -173,15 +178,9 @@ func (client *Client) ImportKey(wif_key, name string) bool{
 	if(isLocked()){
 		return false
 	}
-	Wallet_.Name = name;
+	Wallet_.Name = name
 
-	config, err := client.API.GetConfig()
-	if err != nil {
-		return false
-	}
-	prefix := config.AddressPrefix
-
-	if (import_key(wif_key, prefix)) {
+	if (import_key(wif_key, ADDRESS_PREFIX)) {
 		err := saveWallet(name+".json")
 		if err != nil{
 			return false
@@ -207,4 +206,98 @@ func encryptKeys() error {
 		return err
 	}
 	return nil
+}
+
+func (client *Client) SetKeysFromFileWallet(pathFileWallet string, password string) error {
+	if pathFileWallet == "" {
+		return errors.New("Path file wallet is not empty.")
+	}
+	if password == "" {
+		return errors.New("Password is not empty.")
+	}
+
+	if _, err := os.Stat(pathFileWallet); os.IsNotExist(err) {
+		// pathFileWallet does not exist
+		return errors.New("File wallet does not exist.")
+	}
+
+	data, err := ioutil.ReadFile(pathFileWallet)
+	if(data == nil || err != nil){
+		return errors.New("File wallet is empty or can not read.")
+	}
+	var wl *Wallet;
+	err = json.Unmarshal(data, &wl)
+	if wl == nil || err != nil{
+		return errors.New("Can not decode json wallet data.")
+	}
+
+	new_password := password + wl.Salt
+	pw := sha512.Sum512([]byte(new_password))
+	decrypted, err := Decrypt(pw[:], wl.CipherKeys)
+	if err != nil{
+		return err
+	}
+	var pk PlainKeys
+	err = json.Unmarshal([]byte(decrypted), &pk)
+	if err != nil{
+		return err
+	}
+	//Set keys
+	for k := range pk.Keys {
+		client.SetKeys(&Keys{OKey: []string{pk.Keys[k]}})
+	}
+
+	return nil
+}
+
+func SaveWalletFile(wallet_path string, wallet_filename string, password string, wallet_data *WalletData) error {
+	// Validate data
+	if password == "" {
+		return errors.New("Password is not empty.")
+	}
+	if len(password) < 8 {
+		return errors.New("Password length >= 8 character.")
+	}
+	if wallet_data == nil || wallet_data.Name == "" || wallet_data.PrivateKey == "" || wallet_data.PublicKey == "" {
+		return errors.New("WalletData is invalid.")
+	}
+
+	//
+	// Serialize in memory, then save to disk
+	//
+	// This approach lessens the risk of a partially written wallet
+	// if exceptions are thrown in serialization
+	//
+	keys := make(map[string]string)
+	keys[wallet_data.PublicKey] = wallet_data.PrivateKey
+	salt := randStringBytes(16)
+	new_password := password + salt
+	checksum := sha512.Sum512([]byte(new_password))
+
+	var plainKeys PlainKeys
+	plainKeys.Keys = keys
+	copy(plainKeys.Checksum[:], checksum[:])
+	plainData, err := json.Marshal(plainKeys)
+	if err != nil {
+		return err
+	}
+	plainTxt := string(plainData)
+	cipherKeys, err := Encrypt(plainKeys.Checksum[:], plainTxt)
+
+	if wallet_filename == "" {
+		wallet_filename = wallet_data.Name + "-" + WalletName_
+	}
+	file_path := wallet_filename
+	if wallet_path != "" {
+		file_path = wallet_path + string(os.PathSeparator) + wallet_filename
+	}
+
+	wl := Wallet{CipherKeys: cipherKeys, CipherType: "aes-256-cbc", Name: wallet_data.Name, Salt: salt}
+	data, err := json.Marshal(wl)
+	if err == nil {
+		f, _ := os.OpenFile(file_path, os.O_TRUNC|os.O_CREATE|os.O_RDWR, 0600)
+		defer f.Close()
+		f.Write(data)
+	}
+	return err
 }

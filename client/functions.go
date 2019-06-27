@@ -78,7 +78,6 @@ func (client *Client) GetBalance(account, tokenName string, decimals uint8) (*st
 }
 
 //Transfer of funds to any user.
-
 func (client *Client) Transfer(fromName, toName, memo, amount, fee string) (*OperResp, error) {
 	var trx []types.Operation
 	tx := &types.TransferOperation{
@@ -91,7 +90,6 @@ func (client *Client) Transfer(fromName, toName, memo, amount, fee string) (*Ope
 	trx = append(trx, tx)
 	resp, err := client.SendTrx(trx)
 	return &OperResp{NameOper: "Transfer", Bresp: resp}, err
-
 }
 
 func (client *Client) MultiOp(trx []types.Operation) (*OperResp, error) {
@@ -182,7 +180,40 @@ func (client *Client) SupernodeUpdate(owner, blocksigningkey, fee string) (*Oper
 }
 
 //AccountCreate creating a user in systems
-func (client *Client) AccountCreate(creator, newAccountName, password, fee string) (*OperResp, error) {
+func (client *Client) GenKeys(newAccountName string) (*WalletData, error)  {
+	role := "owner"
+	password := randStringBytes(16)
+	priv := CreatePrivateKey(newAccountName, role, password)
+	pub := CreatePublicKey(ADDRESS_PREFIX, priv)
+
+	return &WalletData{Name: newAccountName, PrivateKey: priv, PublicKey: pub}, nil
+}
+
+func (client *Client) AccountCreate(creator, newAccountName, publicKey, fee string) (*OperResp, error) {
+	var trx []types.Operation
+	empty := map[string]int64{}
+
+	owner := types.Authority{
+		WeightThreshold: 1,
+		AccountAuths:    empty,
+		KeyAuths:        map[string]int64{publicKey: 1},
+	}
+
+	jsonMeta := &types.AccountMetadata{}
+	tx := &types.AccountCreateOperation{
+		Fee:            fee,
+		Creator:        creator,
+		NewAccountName: newAccountName,
+		Owner:          &owner,
+		JSONMetadata:   jsonMeta,
+	}
+
+	trx = append(trx, tx)
+	resp, err := client.SendTrx(trx)
+	return &OperResp{NameOper: "AccountCreate", Bresp: resp}, err
+}
+
+func (client *Client) AccountCreateWS(creator, newAccountName, password, fee string) (*OperResp, error) {
 	type Keys struct {
 		Private string
 		Public  string
@@ -193,17 +224,10 @@ func (client *Client) AccountCreate(creator, newAccountName, password, fee strin
 	empty := map[string]int64{}
 	roles := [1]string{"owner"}
 
-	config, err := client.API.GetConfig()
-	if err != nil{
-		return nil, err
-	}
-	prefix := config.AddressPrefix
-
 	for _, val := range roles {
-		priv := GetPrivateKey(newAccountName, val, password)
-		pub := GetPublicKey(prefix, priv)
+		priv := CreatePrivateKey(newAccountName, val, password)
+		pub := CreatePublicKey(ADDRESS_PREFIX, priv)
 		listKeys[val] = Keys{Private: priv, Public: pub}
-		//client.ImportKey(priv, newAccountName)
 	}
 
 	owner := types.Authority{
@@ -223,7 +247,7 @@ func (client *Client) AccountCreate(creator, newAccountName, password, fee strin
 
 	trx = append(trx, tx)
 	resp, err := client.SendTrx(trx)
-	return &OperResp{NameOper: "AccountCreate", Bresp: resp}, err
+	return &OperResp{NameOper: "AccountCreateWS", Bresp: resp}, err
 }
 
 //CreateMultiSigAccount creating an account shared among many users in systems
