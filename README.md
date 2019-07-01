@@ -79,7 +79,7 @@ fmt.Println(string(json_rtk))
 //8. Create account
 
 //// 8.1. GenKeys
-walletData, _ := cls.GenKeys("new_account_name")
+walletData, _ := cls.GenKeys("new-account-name")
 json_wd, _ := json.Marshal(walletData)
 fmt.Println(string(json_wd))
 
@@ -99,7 +99,7 @@ if err != nil {
 }
 
 //// 8.4. Load file wallet.
-rs := cls.SetKeysFromFileWallet("/path/to/folder/save/wallet/new_account_name-wallet.json", password)
+rs := cls.SetKeysFromFileWallet("/path/to/folder/save/wallet/new-account-name-wallet.json", password)
 if rs != nil {
     fmt.Println(rs)
 }
