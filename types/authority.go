@@ -21,11 +21,11 @@ func (auth *Authority) MarshalTransaction(encoder *transaction.Encoder) error {
 	for acc_key := range auth.AccountAuths {
 		acc_keys = append(acc_keys, acc_key)
 	}
-	acc_tmp := make(map[string]int64)
-	for i:=len(acc_keys)-1; i>=0; i--{
-		item := acc_keys[i]
-		acc_tmp[item] = auth.AccountAuths[item]
-	}
+	//acc_tmp := make(map[string]int64)
+	//for i:=len(acc_keys)-1; i>=0; i--{
+	//	item := acc_keys[i]
+	//	acc_tmp[item] = auth.AccountAuths[item]
+	//}
 	for k, v := range auth.AccountAuths {
 		enc.EncodeString(k)
 		enc.EncodeNumber(uint16(v))
@@ -36,12 +36,12 @@ func (auth *Authority) MarshalTransaction(encoder *transaction.Encoder) error {
 	for key := range auth.KeyAuths {
 		keys = append(keys, key)
 	}
-	tmp := make(map[string]int64)
-	for i:=len(keys)-1; i>=0; i--{
-		item := keys[i]
-		tmp[item] = auth.KeyAuths[item]
-	}
-	for k, v := range tmp {
+	//tmp := make(map[string]int64)
+	//for i:=len(keys)-1; i>=0; i--{
+	//	item := keys[i]
+	//	tmp[item] = auth.KeyAuths[item]
+	//}
+	for k, v := range auth.KeyAuths {
 		enc.EncodePubKey(k)
 		enc.EncodeNumber(uint16(v))
 	}
