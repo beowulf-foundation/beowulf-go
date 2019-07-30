@@ -7,9 +7,9 @@ import (
 )
 
 const fdt = `"20060102t150405"`
-const fee = "0.00100 W"
+const fee = "0.01000 W"
 const smtCreationFee = "1000.00000 W"
-const accCreationFee = "0.01000 W"
+const accCreationFee = "1.00000 W"
 
 func (client *Client) GetBlock(blockNum uint32) (*api.Block, error) {
 	return client.API.GetBlock(blockNum)
@@ -21,12 +21,12 @@ func (client *Client) GetTransaction(trx string) (*api.TransactionResponse, erro
 
 func (client *Client) GetAccount(account string) (*api.AccountInfo, error) {
 	accounts, err := client.API.GetAccounts(account)
-	if err != nil{
+	if err != nil {
 		return nil, err
 	}
 	var list []api.AccountInfo
 	list = *accounts
-	if len(list) == 0{
+	if len(list) == 0 {
 		return nil, errors.New("Unknown account")
 	}
 	return &list[0], nil
@@ -62,12 +62,12 @@ func (client *Client) ListTokens() (*api.TokenList, error) {
 
 func (client *Client) GetToken(name string) (*api.TokenInfo, error) {
 	tokens, err := client.API.GetTokens(name)
-	if err != nil{
+	if err != nil {
 		return nil, err
 	}
 	var list []api.TokenInfo
 	list = *tokens
-	if len(list) == 0{
+	if len(list) == 0 {
 		return nil, errors.New("Unknown token")
 	}
 	return &list[0], nil
@@ -84,7 +84,7 @@ func (client *Client) Transfer(fromName, toName, memo, amount, fee string) (*Ope
 		From:   fromName,
 		To:     toName,
 		Amount: amount,
-		Fee: 	fee,
+		Fee:    fee,
 		Memo:   memo,
 	}
 	trx = append(trx, tx)
@@ -106,13 +106,13 @@ func (client *Client) CreateToken(creator, controlAcc, tokenName string, decimal
 
 	var trx []types.Operation
 	tx := &types.SmtCreateOperation{
-		ControlAccount:   controlAcc,
-		Symbol:     &types.AssetSymbol{Decimals:decimals, AssetName:tokenName},
-		Creator: creator,
-		SmtCreationFee: 	smtCreationFee,
-		Precision:   decimals,
-		Extensions: [][]interface{}{},
-		MaxSupply:	maxSuplly,
+		ControlAccount: controlAcc,
+		Symbol:         &types.AssetSymbol{Decimals: decimals, AssetName: tokenName},
+		Creator:        creator,
+		SmtCreationFee: smtCreationFee,
+		Precision:      decimals,
+		Extensions:     [][]interface{}{},
+		MaxSupply:      maxSuplly,
 	}
 
 	trx = append(trx, tx)
@@ -124,11 +124,11 @@ func (client *Client) CreateToken(creator, controlAcc, tokenName string, decimal
 func (client *Client) AccountSupernodeVote(username, witnessName, fee string, approv bool, votes int64) (*OperResp, error) {
 	var trx []types.Operation
 	tx := &types.AccountSupernodeVoteOperation{
-		Account: username,
+		Account:   username,
 		Supernode: witnessName,
-		Approve: approv,
-		Votes: votes,
-		Fee: fee,
+		Approve:   approv,
+		Votes:     votes,
+		Fee:       fee,
 	}
 
 	trx = append(trx, tx)
@@ -143,7 +143,7 @@ func (client *Client) TransferToVesting(from, to, amount, fee string) (*OperResp
 		From:   from,
 		To:     to,
 		Amount: amount,
-		Fee: fee,
+		Fee:    fee,
 	}
 
 	trx = append(trx, tx)
@@ -157,7 +157,7 @@ func (client *Client) WithdrawVesting(account, vshares, fee string) (*OperResp, 
 	tx := &types.WithdrawVestingOperation{
 		Account:       account,
 		VestingShares: vshares,
-		Fee: fee,
+		Fee:           fee,
 	}
 
 	trx = append(trx, tx)
@@ -171,7 +171,7 @@ func (client *Client) SupernodeUpdate(owner, blocksigningkey, fee string) (*Oper
 	tx := &types.SupernodeUpdateOperation{
 		Owner:           owner,
 		BlockSigningKey: blocksigningkey,
-		Fee: fee,
+		Fee:             fee,
 	}
 
 	trx = append(trx, tx)
@@ -180,7 +180,7 @@ func (client *Client) SupernodeUpdate(owner, blocksigningkey, fee string) (*Oper
 }
 
 //AccountCreate creating a user in systems
-func (client *Client) GenKeys(newAccountName string) (*WalletData, error)  {
+func (client *Client) GenKeys(newAccountName string) (*WalletData, error) {
 	role := "owner"
 	password := randStringBytes(16)
 	priv := CreatePrivateKey(newAccountName, role, password)
@@ -255,8 +255,8 @@ func (client *Client) CreateMultiSigAccount(creator, newAccountName, fee string,
 	var trx []types.Operation
 	var listKeys = make(map[string]int64)
 	empty := map[string]int64{}
-	for _, k:= range owners {
-		listKeys[k]=1
+	for _, k := range owners {
+		listKeys[k] = 1
 	}
 
 	owner := types.Authority{
@@ -284,8 +284,8 @@ func (client *Client) AccountUpdate(account, fee string, owners []string) (*Oper
 	var trx []types.Operation
 	var listKeys = make(map[string]int64)
 	empty := map[string]int64{}
-	for _, k:= range owners {
-		listKeys[k]=1
+	for _, k := range owners {
+		listKeys[k] = 1
 	}
 
 	owner := types.Authority{
@@ -295,10 +295,10 @@ func (client *Client) AccountUpdate(account, fee string, owners []string) (*Oper
 	}
 	jsonMeta := &types.AccountMetadata{}
 	tx := &types.AccountUpdateOperation{
-		Account: 		account,
-		Owner:          &owner,
-		JSONMetadata:   jsonMeta,
-		Fee: 			fee,
+		Account:      account,
+		Owner:        &owner,
+		JSONMetadata: jsonMeta,
+		Fee:          fee,
 	}
 
 	trx = append(trx, tx)

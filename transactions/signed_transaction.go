@@ -23,10 +23,10 @@ type SignedTransaction struct {
 //NewSignedTransaction initialization of a new signed transaction
 func NewSignedTransaction(tx *types.Transaction) *SignedTransaction {
 	if tx.Expiration == nil {
-		expiration := time.Now().Add(1 * time.Hour).UTC()
+		expiration := time.Now().Add(55 * time.Minute).UTC()
 		tx.Expiration = &types.Time{Time: &expiration}
 	}
-	if tx.CreatedTime == 0{
+	if tx.CreatedTime == 0 {
 		createdTime := time.Now().UTC()
 		tx.CreatedTime = types.UInt64(createdTime.Unix())
 	}

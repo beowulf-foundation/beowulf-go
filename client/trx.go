@@ -10,12 +10,12 @@ import (
 
 //BResp of response when sending a transaction.
 type BResp struct {
-	ID       string
+	ID string
 	//BlockNum int32
 	//TrxNum   int32
 	//Expired  bool
 	//CreatedTime int64
-	JSONTrx  string
+	JSONTrx string
 }
 
 //OperResp type is returned when the operation is performed.
@@ -42,7 +42,7 @@ func (client *Client) SendTrx(strx []types.Operation) (*BResp, error) {
 	tx := transactions.NewSignedTransaction(&types.Transaction{
 		RefBlockNum:    transactions.RefBlockNum(props.HeadBlockNumber),
 		RefBlockPrefix: refBlockPrefix,
-		Extensions: [][]interface{}{},
+		Extensions:     [][]interface{}{},
 	})
 
 	// Adding Operations to a Transaction
@@ -50,7 +50,7 @@ func (client *Client) SendTrx(strx []types.Operation) (*BResp, error) {
 		tx.PushOperation(val)
 	}
 
-	expTime := time.Now().Add(time.Duration(1) * time.Hour).UTC()
+	expTime := time.Now().Add(time.Duration(55) * time.Minute).UTC()
 	tm := types.Time{
 		Time: &expTime,
 	}
@@ -86,10 +86,10 @@ func (client *Client) SendTrx(strx []types.Operation) (*BResp, error) {
 		return &bresp, err
 	}
 	//if resp != nil && !client.AsyncProtocol {
-	if resp != nil{
+	if resp != nil {
 		//txIdRes, _ := hex.DecodeString(resp.ID)
 		//fmt.Println(txIdRes)
-		if(txId != resp.ID){
+		if txId != resp.ID {
 			return nil, errors.New("TransactionID is not mapped")
 		}
 		bresp.ID = resp.ID
@@ -119,7 +119,7 @@ func (client *Client) GetTrx(strx []types.Operation) (*types.Transaction, error)
 	tx := &types.Transaction{
 		RefBlockNum:    transactions.RefBlockNum(props.HeadBlockNumber),
 		RefBlockPrefix: refBlockPrefix,
-		Extensions: [][]interface{}{},
+		Extensions:     [][]interface{}{},
 	}
 
 	// Adding Operations to a Transaction
@@ -127,7 +127,7 @@ func (client *Client) GetTrx(strx []types.Operation) (*types.Transaction, error)
 		tx.PushOperation(val)
 	}
 
-	expTime := time.Now().Add(1 * time.Second).UTC()
+	expTime := time.Now().Add(55 * time.Minute).UTC()
 	//expTime := time.Now().Add(59 * time.Minute).UTC()
 	tm := types.Time{
 		Time: &expTime,
