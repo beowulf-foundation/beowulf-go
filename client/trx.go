@@ -8,6 +8,8 @@ import (
 	"time"
 )
 
+var RefBlockMap map[types.Time]uint32
+
 //BResp of response when sending a transaction.
 type BResp struct {
 	ID string
@@ -33,14 +35,19 @@ func (client *Client) SendTrx(strx []types.Operation) (*BResp, error) {
 	if err != nil {
 		return nil, err
 	}
-
+	refBlockNum := props.HeadBlockNumber - 50
+	block, err := client.API.GetBlock(refBlockNum)
+	if err != nil {
+		return nil, err
+	}
+	refBlockId := block.BlockId
 	// Creating a Transaction
-	refBlockPrefix, err := transactions.RefBlockPrefix(props.HeadBlockID)
+	refBlockPrefix, err := transactions.RefBlockPrefix(refBlockId)
 	if err != nil {
 		return nil, err
 	}
 	tx := transactions.NewSignedTransaction(&types.Transaction{
-		RefBlockNum:    transactions.RefBlockNum(props.HeadBlockNumber),
+		RefBlockNum:    transactions.RefBlockNum(refBlockNum),
 		RefBlockPrefix: refBlockPrefix,
 		Extensions:     [][]interface{}{},
 	})
@@ -110,14 +117,19 @@ func (client *Client) GetTrx(strx []types.Operation) (*types.Transaction, error)
 	if err != nil {
 		return nil, err
 	}
-
+	refBlockNum := props.HeadBlockNumber - 50
+	block, err := client.API.GetBlock(refBlockNum)
+	if err != nil {
+		return nil, err
+	}
+	refBlockId := block.BlockId
 	// Creating a Transaction
-	refBlockPrefix, err := transactions.RefBlockPrefix(props.HeadBlockID)
+	refBlockPrefix, err := transactions.RefBlockPrefix(refBlockId)
 	if err != nil {
 		return nil, err
 	}
 	tx := &types.Transaction{
-		RefBlockNum:    transactions.RefBlockNum(props.HeadBlockNumber),
+		RefBlockNum:    transactions.RefBlockNum(refBlockNum),
 		RefBlockPrefix: refBlockPrefix,
 		Extensions:     [][]interface{}{},
 	}
