@@ -35,7 +35,10 @@ func (client *Client) SendTrx(strx []types.Operation) (*BResp, error) {
 	if err != nil {
 		return nil, err
 	}
-	refBlockNum := props.HeadBlockNumber - 50
+	refBlockNum := props.HeadBlockNumber
+	if refBlockNum > 50 {
+		refBlockNum -= 50
+	}
 	block, err := client.API.GetBlock(refBlockNum)
 	if err != nil {
 		return nil, err
@@ -117,7 +120,10 @@ func (client *Client) GetTrx(strx []types.Operation) (*types.Transaction, error)
 	if err != nil {
 		return nil, err
 	}
-	refBlockNum := props.HeadBlockNumber - 50
+	refBlockNum := props.HeadBlockNumber
+	if refBlockNum > 50 {
+		refBlockNum -= 50
+	}
 	block, err := client.API.GetBlock(refBlockNum)
 	if err != nil {
 		return nil, err
