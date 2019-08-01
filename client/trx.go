@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-var RefBlockMap map[types.Time]uint32
+var RefBlockMap = make(map[time.Time]uint32)
 
 //BResp of response when sending a transaction.
 type BResp struct {
@@ -26,18 +26,49 @@ type OperResp struct {
 	Bresp    *BResp
 }
 
+//Get HeadBlockNumber from mem before getting from Blockchain
+func (client *Client) GetHeadBlockNum() (uint32, error) {
+	if len(RefBlockMap) > 0 {
+		for k := range RefBlockMap {
+			old := k.Add(GET_HEAD_BLOCK_NUM_TIMEOUT * time.Minute)
+			now := time.Now().UTC()
+			if old.Before(now) {
+				delete(RefBlockMap, k)
+				props, err := client.API.GetDynamicGlobalProperties()
+				if err != nil {
+					return 0, err
+				}
+				refBlockNum := props.HeadBlockNumber
+				if refBlockNum > 50 {
+					refBlockNum -= 50
+				}
+				RefBlockMap[now] = refBlockNum
+				return refBlockNum, nil
+			}
+			return RefBlockMap[k], nil
+		}
+	}
+	props, err := client.API.GetDynamicGlobalProperties()
+	if err != nil {
+		return 0, err
+	}
+	refBlockNum := props.HeadBlockNumber
+	if refBlockNum > 50 {
+		refBlockNum -= 50
+	}
+	now := time.Now().UTC()
+	RefBlockMap[now] = refBlockNum
+	return refBlockNum, nil
+}
+
 //SendTrx generates and sends an array of transactions to BEOWULF.
 func (client *Client) SendTrx(strx []types.Operation) (*BResp, error) {
 	var bresp BResp
 
 	// Getting the necessary parameters
-	props, err := client.API.GetDynamicGlobalProperties()
+	refBlockNum, err := client.GetHeadBlockNum()
 	if err != nil {
 		return nil, err
-	}
-	refBlockNum := props.HeadBlockNumber
-	if refBlockNum > 50 {
-		refBlockNum -= 50
 	}
 	block, err := client.API.GetBlock(refBlockNum)
 	if err != nil {
@@ -116,13 +147,9 @@ func (client *Client) SendTrx(strx []types.Operation) (*BResp, error) {
 
 func (client *Client) GetTrx(strx []types.Operation) (*types.Transaction, error) {
 	// Getting the necessary parameters
-	props, err := client.API.GetDynamicGlobalProperties()
+	refBlockNum, err := client.GetHeadBlockNum()
 	if err != nil {
 		return nil, err
-	}
-	refBlockNum := props.HeadBlockNumber
-	if refBlockNum > 50 {
-		refBlockNum -= 50
 	}
 	block, err := client.API.GetBlock(refBlockNum)
 	if err != nil {
