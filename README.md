@@ -2,6 +2,11 @@
 
 beowulf-go is the official Beowulf library for Go.  
 
+## Install
+```go
+go get -u github.com/beowulf-foundation/beowulf-go
+```
+
 ## Usage
 
 ```go
