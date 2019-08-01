@@ -11,10 +11,10 @@ import (
 )
 
 var (
-	Keys_ = make(map[string]string)
-	Checksum_ = make([]byte, sha512.Size)
-	Wallet_ Wallet
-	Locked = true
+	Keys_       = make(map[string]string)
+	Checksum_   = make([]byte, sha512.Size)
+	Wallet_     Wallet
+	Locked      = true
 	WalletName_ = "wallet.json"
 )
 
@@ -37,22 +37,22 @@ func allZero(s []byte) bool {
 	return true
 }
 
-type PlainKeys struct{
-	Checksum [sha512.Size]byte	`json:"checksum"`
-	Keys map[string]string 		`json:"keys"`
+type PlainKeys struct {
+	Checksum [sha512.Size]byte `json:"checksum"`
+	Keys     map[string]string `json:"keys"`
 }
 
-type Wallet struct{
+type Wallet struct {
 	CipherKeys string `json:"cipher_keys"`
 	CipherType string `json:"cipher_type"` // "aes-256-cbc"
-	Salt 	   string `json:"salt"`
-	Name	   string `json:"name"`
+	Salt       string `json:"salt"`
+	Name       string `json:"name"`
 }
 
 type WalletData struct {
-	Name 		string `json:"name"`
-	PrivateKey 	string `json:"private_key"`
-	PublicKey 	string `json:"public_key"`
+	Name       string `json:"name"`
+	PrivateKey string `json:"private_key"`
+	PublicKey  string `json:"public_key"`
 }
 
 func isNew() bool {
@@ -63,12 +63,12 @@ func isLocked() bool {
 	return allZero(Checksum_)
 }
 
-func lock() error{
-	if(isLocked()){
+func lock() error {
+	if isLocked() {
 		return errors.New("The wallet must be unlocked before the password can be set")
 	}
 	err := encryptKeys()
-	if err != nil{
+	if err != nil {
 		return err
 	}
 	for k := range Keys_ {
@@ -81,21 +81,21 @@ func lock() error{
 }
 
 func (client *Client) Unlock(password string) error {
-	if(len(password) == 0){
+	if len(password) == 0 {
 		return errors.New("Password must be not empty")
 	}
 	new_password := password + Wallet_.Salt
 	pw := sha512.Sum512([]byte(new_password))
 	decrypted, err := Decrypt(pw[:], Wallet_.CipherKeys)
-	if err != nil{
+	if err != nil {
 		return err
 	}
 	var pk PlainKeys
 	err = json.Unmarshal([]byte(decrypted), &pk)
-	if err != nil{
+	if err != nil {
 		return err
 	}
-	if(pw != pk.Checksum){
+	if pw != pk.Checksum {
 		return errors.New("Don't match checksum")
 	}
 	Keys_ = pk.Keys
@@ -108,9 +108,9 @@ func (client *Client) Unlock(password string) error {
 	return nil
 }
 
-func (client *Client) SetPassword(password string) error{
-	if (!isNew()) {
-		if(isLocked()){
+func (client *Client) SetPassword(password string) error {
+	if !isNew() {
+		if isLocked() {
 			return errors.New("The wallet must be unlocked before the password can be set")
 		}
 	}
@@ -123,8 +123,8 @@ func (client *Client) SetPassword(password string) error{
 	return lock()
 }
 
-func (client *Client) LoadWallet(wallet_filename string) bool{
-	if (wallet_filename == "") {
+func (client *Client) LoadWallet(wallet_filename string) bool {
+	if wallet_filename == "" {
 		wallet_filename = WalletName_
 	}
 	if _, err := os.Stat(wallet_filename); os.IsNotExist(err) {
@@ -133,35 +133,35 @@ func (client *Client) LoadWallet(wallet_filename string) bool{
 	}
 
 	dat, err := ioutil.ReadFile(wallet_filename)
-	if(dat == nil || err != nil){
+	if dat == nil || err != nil {
 		return false
 	}
 	err = json.Unmarshal(dat, &Wallet_)
-	if err != nil{
+	if err != nil {
 		return false
 	}
 	//fmt.Println(Wallet_)
 	return true
 }
 
-func saveWallet(wallet_filename string) error{
-//
-// Serialize in memory, then save to disk
-//
-// This approach lessens the risk of a partially written wallet
-// if exceptions are thrown in serialization
-//
+func saveWallet(wallet_filename string) error {
+	//
+	// Serialize in memory, then save to disk
+	//
+	// This approach lessens the risk of a partially written wallet
+	// if exceptions are thrown in serialization
+	//
 	err := encryptKeys()
-	if err != nil{
+	if err != nil {
 		return err
 	}
 
-	if (wallet_filename == "") {
+	if wallet_filename == "" {
 		wallet_filename = WalletName_
 	}
 
 	data, err := json.Marshal(Wallet_)
-	if(err == nil){
+	if err == nil {
 		f, _ := os.OpenFile(wallet_filename, os.O_TRUNC|os.O_CREATE|os.O_RDWR, 0600)
 		defer f.Close()
 		f.Write(data)
@@ -169,21 +169,21 @@ func saveWallet(wallet_filename string) error{
 	return err
 }
 
-func import_key(wif_key, prefix string) bool{
+func import_key(wif_key, prefix string) bool {
 	pubKey := CreatePublicKey(prefix, wif_key)
 	Keys_[pubKey] = wif_key
 	return true
 }
 
-func (client *Client) ImportKey(wif_key, name string) bool{
-	if(isLocked()){
+func (client *Client) ImportKey(wif_key, name string) bool {
+	if isLocked() {
 		return false
 	}
 	Wallet_.Name = name
 
-	if (import_key(wif_key, config.ADDRESS_PREFIX)) {
-		err := saveWallet(name+".json")
-		if err != nil{
+	if import_key(wif_key, config.ADDRESS_PREFIX) {
+		err := saveWallet(name + ".json")
+		if err != nil {
 			return false
 		}
 		client.SetKeys(&Keys{OKey: []string{wif_key}})
@@ -198,12 +198,12 @@ func encryptKeys() error {
 	copy(data.Checksum[:], Checksum_[:])
 	//data.Checksum = string(Checksum_)
 	plainData, err := json.Marshal(data)
-	if(err != nil){
+	if err != nil {
 		return err
 	}
 	plainTxt := string(plainData)
 	Wallet_.CipherKeys, err = Encrypt(data.Checksum[:], plainTxt)
-	if err != nil{
+	if err != nil {
 		return err
 	}
 	return nil
@@ -223,24 +223,24 @@ func (client *Client) SetKeysFromFileWallet(pathFileWallet string, password stri
 	}
 
 	data, err := ioutil.ReadFile(pathFileWallet)
-	if(data == nil || err != nil){
+	if data == nil || err != nil {
 		return errors.New("File wallet is empty or can not read.")
 	}
-	var wl *Wallet;
+	var wl *Wallet
 	err = json.Unmarshal(data, &wl)
-	if wl == nil || err != nil{
+	if wl == nil || err != nil {
 		return errors.New("Can not decode json wallet data.")
 	}
 
 	new_password := password + wl.Salt
 	pw := sha512.Sum512([]byte(new_password))
 	decrypted, err := Decrypt(pw[:], wl.CipherKeys)
-	if err != nil{
+	if err != nil {
 		return err
 	}
 	var pk PlainKeys
 	err = json.Unmarshal([]byte(decrypted), &pk)
-	if err != nil{
+	if err != nil {
 		return err
 	}
 	//Set keys
