@@ -3,6 +3,7 @@ package client
 import (
 	"net/url"
 	"beowulf-go/api"
+	"beowulf-go/config"
 	"beowulf-go/transports"
 	"beowulf-go/transports/http"
 	"beowulf-go/transports/websocket"
@@ -66,7 +67,7 @@ func NewClient(s string) (*Client, error) {
 	//}
 	//client.chainID = chainID.ChainID
 
-	client.chainID = CHAIN_ID
+	client.chainID = config.CHAIN_ID
 
 	return client, nil
 }

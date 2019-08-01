@@ -1,6 +1,7 @@
 package client
 
 import (
+	"beowulf-go/config"
 	"crypto/sha512"
 	"encoding/json"
 	"github.com/pkg/errors"
@@ -180,7 +181,7 @@ func (client *Client) ImportKey(wif_key, name string) bool{
 	}
 	Wallet_.Name = name
 
-	if (import_key(wif_key, ADDRESS_PREFIX)) {
+	if (import_key(wif_key, config.ADDRESS_PREFIX)) {
 		err := saveWallet(name+".json")
 		if err != nil{
 			return false

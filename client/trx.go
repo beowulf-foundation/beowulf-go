@@ -2,6 +2,7 @@ package client
 
 import (
 	"beowulf-go/api"
+	"beowulf-go/config"
 	"beowulf-go/transactions"
 	"beowulf-go/types"
 	"errors"
@@ -30,7 +31,7 @@ type OperResp struct {
 func (client *Client) GetHeadBlockNum() (uint32, error) {
 	if len(RefBlockMap) > 0 {
 		for k := range RefBlockMap {
-			old := k.Add(GET_HEAD_BLOCK_NUM_TIMEOUT_IN_MIN * time.Minute)
+			old := k.Add(config.GET_HEAD_BLOCK_NUM_TIMEOUT_IN_MIN * time.Minute)
 			now := time.Now().UTC()
 			if old.Before(now) {
 				delete(RefBlockMap, k)
@@ -39,8 +40,8 @@ func (client *Client) GetHeadBlockNum() (uint32, error) {
 					return 0, err
 				}
 				refBlockNum := props.HeadBlockNumber
-				if refBlockNum > HEAD_BLOCK_NUM_SPAN {
-					refBlockNum -= HEAD_BLOCK_NUM_SPAN
+				if refBlockNum > config.HEAD_BLOCK_NUM_SPAN {
+					refBlockNum -= config.HEAD_BLOCK_NUM_SPAN
 				}
 				RefBlockMap[now] = refBlockNum
 				return refBlockNum, nil
@@ -53,8 +54,8 @@ func (client *Client) GetHeadBlockNum() (uint32, error) {
 		return 0, err
 	}
 	refBlockNum := props.HeadBlockNumber
-	if refBlockNum > HEAD_BLOCK_NUM_SPAN {
-		refBlockNum -= HEAD_BLOCK_NUM_SPAN
+	if refBlockNum > config.HEAD_BLOCK_NUM_SPAN {
+		refBlockNum -= config.HEAD_BLOCK_NUM_SPAN
 	}
 	now := time.Now().UTC()
 	RefBlockMap[now] = refBlockNum
@@ -91,7 +92,7 @@ func (client *Client) SendTrx(strx []types.Operation) (*BResp, error) {
 		tx.PushOperation(val)
 	}
 
-	expTime := time.Now().Add(TRANSACTION_EXPIRATION_IN_MIN * time.Minute).UTC()
+	expTime := time.Now().Add(config.TRANSACTION_EXPIRATION_IN_MIN * time.Minute).UTC()
 	tm := types.Time{
 		Time: &expTime,
 	}
@@ -172,7 +173,7 @@ func (client *Client) GetTrx(strx []types.Operation) (*types.Transaction, error)
 		tx.PushOperation(val)
 	}
 
-	expTime := time.Now().Add(TRANSACTION_EXPIRATION_IN_MIN * time.Minute).UTC()
+	expTime := time.Now().Add(config.TRANSACTION_EXPIRATION_IN_MIN * time.Minute).UTC()
 	//expTime := time.Now().Add(59 * time.Minute).UTC()
 	tm := types.Time{
 		Time: &expTime,

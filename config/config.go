@@ -1,4 +1,4 @@
-package client
+package config
 
 // AddressPrefix
 const ADDRESS_PREFIX string = "BEO"

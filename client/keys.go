@@ -1,6 +1,7 @@
 package client
 
 import (
+	"beowulf-go/config"
 	"beowulf-go/encoding/wif"
 	"beowulf-go/types"
 	"crypto/sha256"
@@ -66,7 +67,7 @@ func (client *Client) GetPrivateKey() string {
 func (client *Client) GetPublicKey() string {
 	if client.CurrentKeys != nil {
 		for _, privKey := range client.CurrentKeys.OKey {
-			return CreatePublicKey(ADDRESS_PREFIX, privKey)
+			return CreatePublicKey(config.ADDRESS_PREFIX, privKey)
 		}
 	}
 	return ""

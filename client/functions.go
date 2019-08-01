@@ -2,6 +2,7 @@ package client
 
 import (
 	"beowulf-go/api"
+	"beowulf-go/config"
 	"beowulf-go/types"
 	"errors"
 )
@@ -184,7 +185,7 @@ func (client *Client) GenKeys(newAccountName string) (*WalletData, error) {
 	role := "owner"
 	password := randStringBytes(16)
 	priv := CreatePrivateKey(newAccountName, role, password)
-	pub := CreatePublicKey(ADDRESS_PREFIX, priv)
+	pub := CreatePublicKey(config.ADDRESS_PREFIX, priv)
 
 	return &WalletData{Name: newAccountName, PrivateKey: priv, PublicKey: pub}, nil
 }
@@ -226,7 +227,7 @@ func (client *Client) AccountCreateWS(creator, newAccountName, password, fee str
 
 	for _, val := range roles {
 		priv := CreatePrivateKey(newAccountName, val, password)
-		pub := CreatePublicKey(ADDRESS_PREFIX, priv)
+		pub := CreatePublicKey(config.ADDRESS_PREFIX, priv)
 		listKeys[val] = Keys{Private: priv, Public: pub}
 	}
 

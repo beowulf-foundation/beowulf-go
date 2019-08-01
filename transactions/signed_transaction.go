@@ -3,6 +3,7 @@
 package transactions
 
 import (
+	"beowulf-go/config"
 	// Stdlib
 	"bytes"
 	"crypto/sha256"
@@ -15,8 +16,6 @@ import (
 	"github.com/pkg/errors"
 )
 
-const TRANSACTION_EXPIRATION_IN_MIN = 55
-
 //SignedTransaction structure of a signed transaction
 type SignedTransaction struct {
 	*types.Transaction
@@ -25,7 +24,7 @@ type SignedTransaction struct {
 //NewSignedTransaction initialization of a new signed transaction
 func NewSignedTransaction(tx *types.Transaction) *SignedTransaction {
 	if tx.Expiration == nil {
-		expiration := time.Now().Add(TRANSACTION_EXPIRATION_IN_MIN * time.Minute).UTC()
+		expiration := time.Now().Add(config.TRANSACTION_EXPIRATION_IN_MIN * time.Minute).UTC()
 		tx.Expiration = &types.Time{Time: &expiration}
 	}
 	if tx.CreatedTime == 0 {
