@@ -25,7 +25,7 @@ cls.SetKeys(&client.Keys{OKey: []string{key}})
 defer cls.Close()
 
 //2. Get config
-log.Println("========== GetConfig ==========")
+fmt.Println("========== GetConfig ==========")
 config, err := cls.API.GetConfig()
 if err != nil {
     fmt.Println(err)

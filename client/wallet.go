@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"math/rand"
 	"os"
+	"time"
 )
 
 var (
@@ -18,9 +19,10 @@ var (
 	WalletName_ = "wallet.json"
 )
 
-const letterBytes = "0123456789+/abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+const letterBytes = "0123456789+abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
-func randStringBytes(n int) string {
+func RandStringBytes(n int) string {
+	rand.Seed(time.Now().UnixNano())
 	b := make([]byte, n)
 	for i := range b {
 		b[i] = letterBytes[rand.Intn(len(letterBytes))]
@@ -114,7 +116,7 @@ func (client *Client) SetPassword(password string) error {
 			return errors.New("The wallet must be unlocked before the password can be set")
 		}
 	}
-	salt := randStringBytes(16)
+	salt := RandStringBytes(16)
 	new_password := password + salt
 	c := sha512.Sum512([]byte(new_password))
 	Checksum_ = c[:]
@@ -271,7 +273,7 @@ func SaveWalletFile(wallet_path string, wallet_filename string, password string,
 	//
 	keys := make(map[string]string)
 	keys[wallet_data.PublicKey] = wallet_data.PrivateKey
-	salt := randStringBytes(16)
+	salt := RandStringBytes(16)
 	new_password := password + salt
 	checksum := sha512.Sum512([]byte(new_password))
 

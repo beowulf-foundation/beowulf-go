@@ -1,6 +1,7 @@
 package http
 
 import (
+	"beowulf-go/config"
 	"bytes"
 	"encoding/json"
 	"fmt"
@@ -22,14 +23,14 @@ type Transport struct {
 }
 
 func NewTransport(url string) (*Transport, error) {
-	timeout := time.Duration(5 * time.Second)
+	timeout := time.Duration(config.HTTP_CONNECTION_TIMEOUT_SECOND * time.Second)
 
 	return &Transport{
 		client: http.Client{
 			Timeout: timeout,
 		},
 		Url: url,
-	}, check(url)
+	}, nil
 }
 
 func (caller *Transport) Call(method string, args []interface{}, reply interface{}) error {

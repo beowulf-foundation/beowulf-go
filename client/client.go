@@ -57,7 +57,7 @@ func NewClient(s string) (*Client, error) {
 	}
 	client := &Client{cc: call}
 
-	client.AsyncProtocol = false
+	client.AsyncProtocol = true
 
 	client.API = api.NewAPI(client.cc)
 

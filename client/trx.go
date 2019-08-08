@@ -5,7 +5,6 @@ import (
 	"beowulf-go/config"
 	"beowulf-go/transactions"
 	"beowulf-go/types"
-	"errors"
 	"time"
 )
 
@@ -109,38 +108,38 @@ func (client *Client) SendTrx(strx []types.Operation) (*BResp, error) {
 
 	// Sign the transaction
 	txId, err := tx.Sign(privKeys, client.chainID)
-	if err != nil {
+	if err != nil || txId == "" {
 		return nil, err
 	}
 
 	// Sending a transaction
-	var resp *api.AsyncBroadcastResponse
-	resp, err = client.API.BroadcastTransaction(tx.Transaction)
-	//if client.AsyncProtocol {
-	//	resp, err = client.API.BroadcastTransaction(tx.Transaction)
-	//} else {
-	//	resp, err = client.API.BroadcastTransactionSynchronous(tx.Transaction)
-	//}
+	//var resp *api.AsyncBroadcastResponse
+	//resp, err = client.API.BroadcastTransaction(tx.Transaction)
+	var errb error
+	if client.AsyncProtocol {
+		var resp *api.AsyncBroadcastResponse
+		resp, errb = client.API.BroadcastTransaction(tx.Transaction)
+		if resp != nil {
+			//if txId != resp.ID {
+			//	return nil, errors.New("TransactionID is not mapped")
+			//}
+			bresp.ID = resp.ID
+		}
+	} else {
+		var resp *api.BroadcastResponse
+		resp, errb = client.API.BroadcastTransactionSynchronous(tx.Transaction)
+		if resp != nil {
+			//if txId != resp.ID {
+			//	return nil, errors.New("TransactionID is not mapped")
+			//}
+			bresp.ID = resp.ID
+		}
+	}
 
 	bresp.JSONTrx, _ = JSONTrxString(tx)
 
 	if err != nil {
 		return &bresp, err
-	}
-	//if resp != nil && !client.AsyncProtocol {
-	if resp != nil {
-		//txIdRes, _ := hex.DecodeString(resp.ID)
-		//fmt.Println(txIdRes)
-		if txId != resp.ID {
-			return nil, errors.New("TransactionID is not mapped")
-		}
-		bresp.ID = resp.ID
-		//bresp.BlockNum = resp.BlockNum
-		//bresp.TrxNum = resp.TrxNum
-		//bresp.Expired = resp.Expired
-		//bresp.CreatedTime = resp.CreatedTime
-
-		return &bresp, nil
 	}
 
 	return &bresp, nil

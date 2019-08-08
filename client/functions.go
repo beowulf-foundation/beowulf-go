@@ -183,7 +183,7 @@ func (client *Client) SupernodeUpdate(owner, blocksigningkey, fee string) (*Oper
 //AccountCreate creating a user in systems
 func (client *Client) GenKeys(newAccountName string) (*WalletData, error) {
 	role := "owner"
-	password := randStringBytes(16)
+	password := RandStringBytes(16)
 	priv := CreatePrivateKey(newAccountName, role, password)
 	pub := CreatePublicKey(config.ADDRESS_PREFIX, priv)
 
