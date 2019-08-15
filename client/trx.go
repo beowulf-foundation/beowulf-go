@@ -135,6 +135,9 @@ func (client *Client) SendTrx(strx []types.Operation) (*BResp, error) {
 			bresp.ID = resp.ID
 		}
 	}
+	if errb != nil {
+		err = errb
+	}
 
 	bresp.JSONTrx, _ = JSONTrxString(tx)
 
