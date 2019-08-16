@@ -7,11 +7,6 @@ import (
 	"errors"
 )
 
-const fdt = `"20060102t150405"`
-const fee = "0.01000 W"
-const smtCreationFee = "1000.00000 W"
-const accCreationFee = "1.00000 W"
-
 func (client *Client) GetBlock(blockNum uint32) (*api.Block, error) {
 	return client.API.GetBlock(blockNum)
 }
@@ -110,7 +105,7 @@ func (client *Client) CreateToken(creator, controlAcc, tokenName string, decimal
 		ControlAccount: controlAcc,
 		Symbol:         &types.AssetSymbol{Decimals: decimals, AssetName: tokenName},
 		Creator:        creator,
-		SmtCreationFee: smtCreationFee,
+		SmtCreationFee: config.SMT_CREATION_FEE,
 		Precision:      decimals,
 		Extensions:     [][]interface{}{},
 		MaxSupply:      maxSuplly,
