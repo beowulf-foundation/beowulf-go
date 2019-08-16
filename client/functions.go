@@ -5,6 +5,8 @@ import (
 	"beowulf-go/config"
 	"beowulf-go/types"
 	"errors"
+	"strconv"
+	"strings"
 )
 
 func (client *Client) GetBlock(blockNum uint32) (*api.Block, error) {
@@ -75,6 +77,10 @@ func (client *Client) GetBalance(account, tokenName string, decimals uint8) (*st
 
 //Transfer of funds to any user.
 func (client *Client) Transfer(fromName, toName, memo, amount, fee string) (*OperResp, error) {
+	validate := validateFee(fee, config.MIN_TRANSACTION_FEE)
+	if validate == false {
+		return nil, errors.New("Fee is not valid")
+	}
 	var trx []types.Operation
 	tx := &types.TransferOperation{
 		From:   fromName,
@@ -118,6 +124,10 @@ func (client *Client) CreateToken(creator, controlAcc, tokenName string, decimal
 
 //AccountSupernodeVote of voting for the delegate.
 func (client *Client) AccountSupernodeVote(username, witnessName, fee string, approv bool, votes int64) (*OperResp, error) {
+	validate := validateFee(fee, config.MIN_TRANSACTION_FEE)
+	if validate == false {
+		return nil, errors.New("Fee is not valid")
+	}
 	var trx []types.Operation
 	tx := &types.AccountSupernodeVoteOperation{
 		Account:   username,
@@ -134,6 +144,10 @@ func (client *Client) AccountSupernodeVote(username, witnessName, fee string, ap
 
 //TransferToVesting transfer to POWER
 func (client *Client) TransferToVesting(from, to, amount, fee string) (*OperResp, error) {
+	validate := validateFee(fee, config.MIN_TRANSACTION_FEE)
+	if validate == false {
+		return nil, errors.New("Fee is not valid")
+	}
 	var trx []types.Operation
 	tx := &types.TransferToVestingOperation{
 		From:   from,
@@ -149,6 +163,10 @@ func (client *Client) TransferToVesting(from, to, amount, fee string) (*OperResp
 
 //WithdrawVesting down POWER
 func (client *Client) WithdrawVesting(account, vshares, fee string) (*OperResp, error) {
+	validate := validateFee(fee, config.MIN_TRANSACTION_FEE)
+	if validate == false {
+		return nil, errors.New("Fee is not valid")
+	}
 	var trx []types.Operation
 	tx := &types.WithdrawVestingOperation{
 		Account:       account,
@@ -163,6 +181,10 @@ func (client *Client) WithdrawVesting(account, vshares, fee string) (*OperResp, 
 
 //SupernodeUpdate updating delegate data
 func (client *Client) SupernodeUpdate(owner, blocksigningkey, fee string) (*OperResp, error) {
+	validate := validateFee(fee, config.MIN_TRANSACTION_FEE)
+	if validate == false {
+		return nil, errors.New("Fee is not valid")
+	}
 	var trx []types.Operation
 	tx := &types.SupernodeUpdateOperation{
 		Owner:           owner,
@@ -186,6 +208,10 @@ func (client *Client) GenKeys(newAccountName string) (*WalletData, error) {
 }
 
 func (client *Client) AccountCreate(creator, newAccountName, publicKey, fee string) (*OperResp, error) {
+	validate := validateFee(fee, config.MIN_ACCOUNT_CREATION_FEE)
+	if validate == false {
+		return nil, errors.New("Fee is not valid")
+	}
 	var trx []types.Operation
 	empty := map[string]int64{}
 
@@ -210,6 +236,10 @@ func (client *Client) AccountCreate(creator, newAccountName, publicKey, fee stri
 }
 
 func (client *Client) AccountCreateWS(creator, newAccountName, password, fee string) (*OperResp, error) {
+	validate := validateFee(fee, config.MIN_ACCOUNT_CREATION_FEE)
+	if validate == false {
+		return nil, errors.New("Fee is not valid")
+	}
 	type Keys struct {
 		Private string
 		Public  string
@@ -248,6 +278,10 @@ func (client *Client) AccountCreateWS(creator, newAccountName, password, fee str
 
 //CreateMultiSigAccount creating an account shared among many users in systems
 func (client *Client) CreateMultiSigAccount(creator, newAccountName, fee string, owners []string) (*OperResp, error) {
+	validate := validateFee(fee, config.MIN_ACCOUNT_CREATION_FEE)
+	if validate == false {
+		return nil, errors.New("Fee is not valid")
+	}
 	var trx []types.Operation
 	var listKeys = make(map[string]int64)
 	empty := map[string]int64{}
@@ -277,6 +311,10 @@ func (client *Client) CreateMultiSigAccount(creator, newAccountName, fee string,
 //AccountUpdate update owner keys for account
 //TODO: every key has different weight on account
 func (client *Client) AccountUpdate(account, fee string, owners []string) (*OperResp, error) {
+	validate := validateFee(fee, config.MIN_TRANSACTION_FEE)
+	if validate == false {
+		return nil, errors.New("Fee is not valid")
+	}
 	var trx []types.Operation
 	var listKeys = make(map[string]int64)
 	empty := map[string]int64{}
@@ -300,4 +338,22 @@ func (client *Client) AccountUpdate(account, fee string, owners []string) (*Oper
 	trx = append(trx, tx)
 	resp, err := client.SendTrx(trx)
 	return &OperResp{NameOper: "AccountUpdate", Bresp: resp}, err
+}
+
+func validateFee(fee string, minFee float64) bool {
+	//Validate format of fee
+	amount := strings.Split(fee, " ")[0]
+	symbol := strings.Split(fee, " ")[1]
+	if symbol != config.WD_SYMBOL {
+		return false
+	}
+	//Parse fee to float
+	amt, err := strconv.ParseFloat(amount, 64)
+	if err != nil {
+		return false
+	}
+	if amt < minFee {
+		return false
+	}
+	return true
 }
