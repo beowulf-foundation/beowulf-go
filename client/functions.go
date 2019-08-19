@@ -81,6 +81,10 @@ func (client *Client) Transfer(fromName, toName, memo, amount, fee string) (*Ope
 	if validate == false {
 		return nil, errors.New("Fee is not valid")
 	}
+	validate = validateAmount(amount)
+	if validate == false {
+		return nil, errors.New("Amount is not valid")
+	}
 	var trx []types.Operation
 	tx := &types.TransferOperation{
 		From:   fromName,
@@ -99,7 +103,7 @@ func (client *Client) MultiOp(trx []types.Operation) (*OperResp, error) {
 	return &OperResp{NameOper: "Multi", Bresp: resp}, err
 }
 
-func (client *Client) CreateToken(creator, controlAcc, tokenName string, decimals uint8, maxSuplly uint64) (*OperResp, error) {
+func (client *Client) CreateToken(creator, controlAcc, tokenName string, decimals uint8, maxSupply uint64) (*OperResp, error) {
 	//config, err := client.API.GetConfig()
 	//if err != nil{
 	//	return nil, err
@@ -114,7 +118,7 @@ func (client *Client) CreateToken(creator, controlAcc, tokenName string, decimal
 		SmtCreationFee: config.SMT_CREATION_FEE,
 		Precision:      decimals,
 		Extensions:     [][]interface{}{},
-		MaxSupply:      maxSuplly,
+		MaxSupply:      maxSupply,
 	}
 
 	trx = append(trx, tx)
@@ -123,7 +127,30 @@ func (client *Client) CreateToken(creator, controlAcc, tokenName string, decimal
 }
 
 //AccountSupernodeVote of voting for the delegate.
-func (client *Client) AccountSupernodeVote(username, witnessName, fee string, approv bool, votes int64) (*OperResp, error) {
+func (client *Client) AccountSupernodeVote(username, witnessName, fee string, votes int64) (*OperResp, error) {
+	validate := validateFee(fee, config.MIN_TRANSACTION_FEE)
+	if validate == false {
+		return nil, errors.New("Fee is not valid")
+	}
+	if votes <= 0 {
+		return nil, errors.New("Vote is not valid")
+	}
+	var trx []types.Operation
+	tx := &types.AccountSupernodeVoteOperation{
+		Account:   username,
+		Supernode: witnessName,
+		Approve:   true,
+		Votes:     votes,
+		Fee:       fee,
+	}
+
+	trx = append(trx, tx)
+	resp, err := client.SendTrx(trx)
+	return &OperResp{NameOper: "AccountSupernodeVote", Bresp: resp}, err
+}
+
+//Unvote
+func (client *Client) AccountSupernodeUnvote(username, witnessName, fee string) (*OperResp, error) {
 	validate := validateFee(fee, config.MIN_TRANSACTION_FEE)
 	if validate == false {
 		return nil, errors.New("Fee is not valid")
@@ -132,8 +159,8 @@ func (client *Client) AccountSupernodeVote(username, witnessName, fee string, ap
 	tx := &types.AccountSupernodeVoteOperation{
 		Account:   username,
 		Supernode: witnessName,
-		Approve:   approv,
-		Votes:     votes,
+		Approve:   false,
+		Votes:     0,
 		Fee:       fee,
 	}
 
@@ -147,6 +174,10 @@ func (client *Client) TransferToVesting(from, to, amount, fee string) (*OperResp
 	validate := validateFee(fee, config.MIN_TRANSACTION_FEE)
 	if validate == false {
 		return nil, errors.New("Fee is not valid")
+	}
+	validate = validateAmount(amount)
+	if validate == false {
+		return nil, errors.New("Amount is not valid")
 	}
 	var trx []types.Operation
 	tx := &types.TransferToVestingOperation{
@@ -166,6 +197,10 @@ func (client *Client) WithdrawVesting(account, vshares, fee string) (*OperResp, 
 	validate := validateFee(fee, config.MIN_TRANSACTION_FEE)
 	if validate == false {
 		return nil, errors.New("Fee is not valid")
+	}
+	validate = validateAmount(vshares)
+	if validate == false {
+		return nil, errors.New("Amount is not valid")
 	}
 	var trx []types.Operation
 	tx := &types.WithdrawVestingOperation{
@@ -353,6 +388,18 @@ func validateFee(fee string, minFee float64) bool {
 		return false
 	}
 	if amt < minFee {
+		return false
+	}
+	return true
+}
+
+func validateAmount(amount string) bool {
+	amtStr := strings.Split(amount, " ")[0]
+	amt, err := strconv.ParseFloat(amtStr, 64)
+	if err != nil {
+		return false
+	}
+	if amt <= 0 {
 		return false
 	}
 	return true
