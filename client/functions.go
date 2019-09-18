@@ -5,6 +5,7 @@ import (
 	"beowulf-go/config"
 	"beowulf-go/types"
 	"errors"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -313,6 +314,10 @@ func (client *Client) AccountCreateWS(creator, newAccountName, password, fee str
 
 //CreateMultiSigAccount creating an account shared among many users in systems
 func (client *Client) CreateMultiSigAccount(creator, newAccountName, fee string, owners []string) (*OperResp, error) {
+	//Resort owners
+	if len(owners) > 0 {
+		sort.Strings(owners)
+	}
 	validate := validateFee(fee, config.MIN_ACCOUNT_CREATION_FEE)
 	if validate == false {
 		return nil, errors.New("Fee is not valid")
@@ -346,6 +351,10 @@ func (client *Client) CreateMultiSigAccount(creator, newAccountName, fee string,
 //AccountUpdate update owner keys for account
 //TODO: every key has different weight on account
 func (client *Client) AccountUpdate(account, fee string, owners []string) (*OperResp, error) {
+	//Resort owners
+	if len(owners) > 0 {
+		sort.Strings(owners)
+	}
 	validate := validateFee(fee, config.MIN_TRANSACTION_FEE)
 	if validate == false {
 		return nil, errors.New("Fee is not valid")
