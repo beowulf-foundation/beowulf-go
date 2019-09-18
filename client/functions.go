@@ -5,6 +5,7 @@ import (
 	"beowulf-go/config"
 	"beowulf-go/types"
 	"errors"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -317,6 +318,15 @@ func (client *Client) CreateMultiSigAccount(creator, newAccountName, fee string,
 	if validate == false {
 		return nil, errors.New("Fee is not valid")
 	}
+	//Resort owners
+	if len(owners) > 0 {
+		sort.Strings(owners)
+	}
+	threshold := 1
+	if len(owners) > 1 {
+		threshold = len(owners)
+	}
+
 	var trx []types.Operation
 	var listKeys = make(map[string]int64)
 	empty := map[string]int64{}
@@ -325,7 +335,7 @@ func (client *Client) CreateMultiSigAccount(creator, newAccountName, fee string,
 	}
 
 	owner := types.Authority{
-		WeightThreshold: uint32(len(owners)),
+		WeightThreshold: uint32(threshold),
 		AccountAuths:    empty,
 		KeyAuths:        listKeys,
 	}
@@ -350,6 +360,15 @@ func (client *Client) AccountUpdate(account, fee string, owners []string) (*Oper
 	if validate == false {
 		return nil, errors.New("Fee is not valid")
 	}
+	//Resort owners
+	if len(owners) > 0 {
+		sort.Strings(owners)
+	}
+	threshold := 1
+	if len(owners) > 1 {
+		threshold = len(owners)
+	}
+
 	var trx []types.Operation
 	var listKeys = make(map[string]int64)
 	empty := map[string]int64{}
@@ -358,7 +377,7 @@ func (client *Client) AccountUpdate(account, fee string, owners []string) (*Oper
 	}
 
 	owner := types.Authority{
-		WeightThreshold: uint32(len(owners)),
+		WeightThreshold: uint32(threshold),
 		AccountAuths:    empty,
 		KeyAuths:        listKeys,
 	}
