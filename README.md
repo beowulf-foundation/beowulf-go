@@ -17,12 +17,15 @@ import "github.com/beowulf-foundation/beowulf-go"
 
 ```go
 //1. Init
+//// MainNet: https://bw.beowulfchain.com/rpc
+//// TestNet: https://testnet-bw.beowulfchain.com/rpc
 url := " http://localhost:8376" // Replace this url with your node url
 cls, _ := client.NewClient(url)
+defer cls.Close()
 //// SetKeys
 key := "5Jxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" // Replace your private key
 cls.SetKeys(&client.Keys{OKey: []string{key}})
-defer cls.Close()
+
 
 //2. Get config
 fmt.Println("========== GetConfig ==========")
@@ -89,7 +92,7 @@ json_wd, _ := json.Marshal(walletData)
 fmt.Println(string(json_wd))
 
 //// 8.2. AccountCreate
-resp_ac, err := cls.AccountCreate("creator", walletData.Name, walletData.PublicKey,"0.10000 W")
+resp_ac, err := cls.AccountCreate("creator", walletData.Name, walletData.PublicKey,"1.00000 W")
 if err != nil {
     fmt.Println(err)
 }
