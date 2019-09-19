@@ -318,13 +318,14 @@ func (client *Client) CreateMultiSigAccount(creator, newAccountName, fee string,
 	if validate == false {
 		return nil, errors.New("Fee is not valid")
 	}
-	//Resort owners
-	if len(owners) > 0 {
-		sort.Strings(owners)
+	if len(owners) == 0 {
+		return nil, errors.New("owners is not empty")
 	}
+	//Sort owners
 	threshold := 1
 	if len(owners) > 1 {
 		threshold = len(owners)
+		sort.Strings(owners)
 	}
 
 	var trx []types.Operation
@@ -360,13 +361,14 @@ func (client *Client) AccountUpdate(account, fee string, owners []string) (*Oper
 	if validate == false {
 		return nil, errors.New("Fee is not valid")
 	}
-	//Resort owners
-	if len(owners) > 0 {
-		sort.Strings(owners)
+	if len(owners) == 0 {
+		return nil, errors.New("owners is not empty")
 	}
+	//Sort owners
 	threshold := 1
 	if len(owners) > 1 {
 		threshold = len(owners)
+		sort.Strings(owners)
 	}
 
 	var trx []types.Operation
