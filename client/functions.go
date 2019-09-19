@@ -395,6 +395,10 @@ func (client *Client) AccountUpdate(account, fee string, owners []string) (*Oper
 }
 
 func validateFee(fee string, minFee float64) bool {
+	idx := strings.Index(fee, " ")
+	if idx < 0 {
+		return false
+	}
 	//Validate format of fee
 	amount := strings.Split(fee, " ")[0]
 	symbol := strings.Split(fee, " ")[1]
@@ -413,6 +417,10 @@ func validateFee(fee string, minFee float64) bool {
 }
 
 func validateAmount(amount string) bool {
+	idx := strings.Index(amount, " ")
+	if idx < 0 {
+		return false
+	}
 	amtStr := strings.Split(amount, " ")[0]
 	amt, err := strconv.ParseFloat(amtStr, 64)
 	if err != nil {
