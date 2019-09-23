@@ -117,3 +117,34 @@ func (tx *SignedTransaction) Sign(privKeys [][]byte, chain string) (string, erro
 	txHex := hex.EncodeToString(txId)
 	return txHex, nil
 }
+
+func (tx *SignedTransaction) SignMulti(privKeys [][]byte, chain string) ([]string, error) {
+	var sigsHex []string
+	var buf bytes.Buffer
+	chainid, errdec := hex.DecodeString(chain)
+	if errdec != nil {
+		return sigsHex, errdec
+	}
+
+	txRaw, err := tx.Serialize()
+	if err != nil {
+		return sigsHex, err
+	}
+	hashSha256 := sha256.Sum256(txRaw)
+	var txId = make([]byte, 20)
+	copy(txId, hashSha256[:20])
+	buf.Write(chainid)
+	buf.Write(txRaw)
+	data := buf.Bytes()
+
+	for _, privB := range privKeys {
+		sigBytes, err := tx.SignSingle(privB, data)
+		if err != nil {
+			return sigsHex, err
+		}
+		sigsHex = append(sigsHex, hex.EncodeToString(sigBytes))
+	}
+
+	//tx.Transaction.Signatures = sigsHex
+	return sigsHex, nil
+}

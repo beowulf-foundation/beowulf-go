@@ -20,3 +20,5 @@ const WD_SYMBOL = "W"
 const MIN_TRANSACTION_FEE = 0.01000
 
 const MIN_ACCOUNT_CREATION_FEE = 1.00000
+
+const NAME_LETTER = "0123456789abcdefghijklmnopqrstuvwxyz-"
