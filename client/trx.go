@@ -107,6 +107,7 @@ func (client *Client) SendTrx(strx []types.Operation) (*BResp, error) {
 	}
 
 	// Sign the transaction
+	tx.Transaction.Signatures = []string{}
 	txId, err := tx.Sign(privKeys, client.chainID)
 	if err != nil || txId == "" {
 		return nil, err

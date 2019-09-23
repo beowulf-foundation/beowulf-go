@@ -98,6 +98,24 @@ func (client *Client) SigningKeys(trx types.Operation) ([][]byte, error) {
 	return keys, nil
 }
 
+func (client *Client) GetSigningKeysOwner() ([][]byte, error) {
+	var keys [][]byte
+
+	if client.CurrentKeys == nil {
+		return nil, errors.New("Client Keys not initialized. Use SetKeys method")
+	}
+
+	for _, keyStr := range client.CurrentKeys.OKey {
+		privKey, err := wif.Decode(keyStr)
+		if err != nil {
+			return nil, errors.New("error decode Owner Key: " + err.Error())
+		}
+		keys = append(keys, privKey)
+	}
+
+	return keys, nil
+}
+
 //CreatePrivateKey generates a private key based on the specified parameters.
 func CreatePrivateKey(user, role, password string) string {
 	new_password := password + Wallet_.Salt;
