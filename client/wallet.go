@@ -142,7 +142,6 @@ func (client *Client) LoadWallet(wallet_filename string) bool {
 	if err != nil {
 		return false
 	}
-	//fmt.Println(Wallet_)
 	return true
 }
 
@@ -198,7 +197,6 @@ func encryptKeys() error {
 	var data PlainKeys
 	data.Keys = Keys_
 	copy(data.Checksum[:], Checksum_[:])
-	//data.Checksum = string(Checksum_)
 	plainData, err := json.Marshal(data)
 	if err != nil {
 		return err

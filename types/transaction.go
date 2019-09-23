@@ -7,9 +7,6 @@ import (
 
 // Transaction represents a blockchain transaction.
 type Transaction struct {
-	//transaction_id_type        transaction_id;
-	//uint32_t                   block_num = 0;
-	//uint32_t                   transaction_num = 0;
 	RefBlockNum    UInt16     `json:"ref_block_num"`
 	RefBlockPrefix UInt32     `json:"ref_block_prefix"`
 	Expiration     *Time      `json:"expiration"`

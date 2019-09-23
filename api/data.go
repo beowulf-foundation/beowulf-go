@@ -27,7 +27,6 @@ type Version struct{
 //Config structure for the GetConfig function.
 type Config struct {
 	TokenCreationFee				 int 		   `json:"SMT_TOKEN_CREATION_FEE"`
-	//WDSymbol						 string		   `json:"WD_SYMBOL"`
 	Percent100                       *types.Int    `json:"BEOWULF_100_PERCENT"`
 	Percent1                         *types.Int    `json:"BEOWULF_1_PERCENT"`
 	AddressPrefix                    string        `json:"BEOWULF_ADDRESS_PREFIX"`
@@ -73,8 +72,6 @@ type Config struct {
 	OwnerUpdateLimit				 *types.Int    `json:"BEOWULF_OWNER_UPDATE_LIMIT"`
 	VestingWithdrawIntervals         *types.Int    `json:"BEOWULF_VESTING_WITHDRAW_INTERVALS"`
 	VestingWithdrawIntervalSeconds   *types.Int    `json:"BEOWULF_VESTING_WITHDRAW_INTERVAL_SECONDS"`
-	//BEOWULF_SYMBOL
-	//VESTS_SYMBOL
 	VirtualScheduleLapLength		 *types.Int	   `json:"BEOWULF_VIRTUAL_SCHEDULE_LAP_LENGTH2"`
 	Beowulf1Beowulf					 *types.Int	   `json:"BEOWULF_1_BEOWULF"`
 	Beowulf1Vests					 *types.Int	   `json:"BEOWULF_1_VESTS"`
@@ -188,9 +185,6 @@ type SupernodeInfo struct{
 	LastConfirmedBlockNum 	uint64				`json:"last_confirmed_block_num"`
 	SigningKey				string				`json:"signing_key"`
 	Votes					*types.Int64		`json:"votes"`
-	//VirtualLastUpdate 		*big.Int			`json:"virtual_last_update"`
-	//VirtualPosition			*big.Int			`json:"virtual_position"`
-	//VirtualScheduledTime	*big.Int			`json:"virtual_scheduled_time"`
 	LastWork				string				`json:"last_work"`
 	RunningVersion			string				`json:"running_version"`
 	HardforkVersionVote		string				`json:"hardfork_version_vote"`

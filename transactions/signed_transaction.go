@@ -87,21 +87,12 @@ func (tx *SignedTransaction) Sign(privKeys [][]byte, chain string) (string, erro
 	if err != nil {
 		return "", err
 	}
-	//fmt.Println(txRaw)
-	//fmt.Println("Hex of tx:")
-	//tmp := hex.EncodeToString(txRaw)
-	//fmt.Println(tmp)
 	hashSha256 := sha256.Sum256(txRaw)
-	//fmt.Println("SHA256 of tx:")
-	//fmt.Println(hashSha256)
 	var txId = make([]byte, 20)
 	copy(txId, hashSha256[:20])
-	//memcpy(result._hash, h._hash, std::min(sizeof(result), sizeof(h)));
 	buf.Write(chainid)
 	buf.Write(txRaw)
 	data := buf.Bytes()
-	//msg_sha := crypto.Sha256(buf.Bytes())
-	//fmt.Println(data)
 
 	var sigsHex []string
 

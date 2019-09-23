@@ -107,12 +107,6 @@ func (client *Client) MultiOp(trx []types.Operation) (*OperResp, error) {
 }
 
 func (client *Client) CreateToken(creator, controlAcc, tokenName string, decimals uint8, maxSupply uint64) (*OperResp, error) {
-	//config, err := client.API.GetConfig()
-	//if err != nil{
-	//	return nil, err
-	//}
-	//feeAmt := config.TokenCreationFee
-
 	var trx []types.Operation
 	tx := &types.SmtCreateOperation{
 		ControlAccount: controlAcc,
@@ -561,7 +555,6 @@ func (client *Client) SendTrxMultiSig(tx *transactions.SignedTransaction) (*BRes
 	var bresp BResp
 	var err error
 	// Sending a transaction
-	//var errb error
 	if client.AsyncProtocol {
 		var resp *api.AsyncBroadcastResponse
 		resp, err = client.API.BroadcastTransaction(tx.Transaction)

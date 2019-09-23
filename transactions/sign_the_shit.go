@@ -1,13 +1,15 @@
 package transactions
 
 import (
+	"beowulf-go/transactions/rfc6979"
 	"crypto/ecdsa"
 	"crypto/elliptic"
 	"crypto/sha256"
-	"math/big"
 	secp256k1 "github.com/btcsuite/btcd/btcec"
 	"github.com/pkg/errors"
-	"beowulf-go/transactions/rfc6979"
+	"math/big"
+	"math/rand"
+	"time"
 )
 
 //SignSingle signature of the transaction by one of the keys
@@ -16,15 +18,12 @@ func (tx *SignedTransaction) SignSingle(privB, data []byte) ([]byte, error) {
 	copy(privKeyBytes[:], privB)
 
 	priv, _ := secp256k1.PrivKeyFromBytes(secp256k1.S256(), privKeyBytes[:])
-	//priv, _ := btcec.PrivKeyFromBytes(btcec.S256(), privKeyBytes[:])
 	priEcdsa := priv.ToECDSA()
 
 	return signBuffer(data, priEcdsa)
 }
 
 func signBuffer(buf []byte, privateKey *ecdsa.PrivateKey) ([]byte, error) {
-	//log.Println("signBuffer buf=", hex.EncodeToString(buf))
-
 	// Hash a message.
 	alg := sha256.New()
 	_, errAlg := alg.Write(buf)
@@ -41,12 +40,12 @@ func signBufferSha256(bufSha256 []byte, privateKey *ecdsa.PrivateKey) ([]byte, e
 	var bufSha256Clone = make([]byte, len(bufSha256))
 	copy(bufSha256Clone, bufSha256)
 
-	nonce := 0
-	// key := (*btcec.PrivateKey)(privateKey)
+	//nonce := 0
+	rand.Seed(time.Now().UnixNano())
+	nonce := int(rand.Int31())
 
 	for {
 		r, s, err := rfc6979.SignECDSA(privateKey, bufSha256Clone, sha256.New, nonce)
-		// ecsignature, err := key.Sign(bufSha256Clone)
 
 		nonce++
 		if err != nil {
@@ -58,7 +57,6 @@ func signBufferSha256(bufSha256 []byte, privateKey *ecdsa.PrivateKey) ([]byte, e
 		der := ecsignature.Serialize()
 		lenR := der[3]
 		lenS := der[5+lenR]
-		//log.Println("lenR=", lenR, "lenS", lenS)
 
 		if lenR == 32 && lenS == 32 {
 			//////////////////////////////////////

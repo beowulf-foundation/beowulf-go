@@ -61,12 +61,6 @@ func NewClient(s string) (*Client, error) {
 
 	client.API = api.NewAPI(client.cc)
 
-	//chainID, err := client.API.GetConfig()
-	//if err != nil {
-	//	return nil, err
-	//}
-	//client.chainID = chainID.ChainID
-
 	client.chainID = config.CHAIN_ID
 
 	return client, nil

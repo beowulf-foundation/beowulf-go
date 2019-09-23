@@ -13,10 +13,6 @@ var RefBlockMap = make(map[time.Time]uint32)
 //BResp of response when sending a transaction.
 type BResp struct {
 	ID string
-	//BlockNum int32
-	//TrxNum   int32
-	//Expired  bool
-	//CreatedTime int64
 	JSONTrx string
 }
 
@@ -114,30 +110,18 @@ func (client *Client) SendTrx(strx []types.Operation) (*BResp, error) {
 	}
 
 	// Sending a transaction
-	//var resp *api.AsyncBroadcastResponse
-	//resp, err = client.API.BroadcastTransaction(tx.Transaction)
-	var errb error
 	if client.AsyncProtocol {
 		var resp *api.AsyncBroadcastResponse
-		resp, errb = client.API.BroadcastTransaction(tx.Transaction)
+		resp, err = client.API.BroadcastTransaction(tx.Transaction)
 		if resp != nil {
-			//if txId != resp.ID {
-			//	return nil, errors.New("TransactionID is not mapped")
-			//}
 			bresp.ID = resp.ID
 		}
 	} else {
 		var resp *api.BroadcastResponse
-		resp, errb = client.API.BroadcastTransactionSynchronous(tx.Transaction)
+		resp, err = client.API.BroadcastTransactionSynchronous(tx.Transaction)
 		if resp != nil {
-			//if txId != resp.ID {
-			//	return nil, errors.New("TransactionID is not mapped")
-			//}
 			bresp.ID = resp.ID
 		}
-	}
-	if errb != nil {
-		err = errb
 	}
 
 	bresp.JSONTrx, _ = JSONTrxString(tx)
