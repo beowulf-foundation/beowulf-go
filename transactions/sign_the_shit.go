@@ -8,6 +8,8 @@ import (
 	secp256k1 "github.com/btcsuite/btcd/btcec"
 	"github.com/pkg/errors"
 	"beowulf-go/transactions/rfc6979"
+	"math/rand"
+	"time"
 )
 
 //SignSingle signature of the transaction by one of the keys
@@ -41,8 +43,8 @@ func signBufferSha256(bufSha256 []byte, privateKey *ecdsa.PrivateKey) ([]byte, e
 	var bufSha256Clone = make([]byte, len(bufSha256))
 	copy(bufSha256Clone, bufSha256)
 
-	nonce := 0
-	// key := (*btcec.PrivateKey)(privateKey)
+	rand.Seed(time.Now().UnixNano())
+	nonce := int(rand.Int31())
 
 	for {
 		r, s, err := rfc6979.SignECDSA(privateKey, bufSha256Clone, sha256.New, nonce)
