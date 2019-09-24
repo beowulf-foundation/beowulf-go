@@ -40,7 +40,6 @@ func signBufferSha256(bufSha256 []byte, privateKey *ecdsa.PrivateKey) ([]byte, e
 	var bufSha256Clone = make([]byte, len(bufSha256))
 	copy(bufSha256Clone, bufSha256)
 
-	//nonce := 0
 	rand.Seed(time.Now().UnixNano())
 	nonce := int(rand.Int31())
 
