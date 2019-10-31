@@ -171,7 +171,7 @@ func (encoder *Encoder) EncodeMoney(s string) error {
 		}
 		return nil
 	}
-	return errors.New("Expecting amount like '99.000 SYMBOL'")
+	return errors.New("Expecting amount like '99.00000 SYMBOL'")
 }
 
 //EncodePubKey converting PubKey to byte
@@ -254,11 +254,6 @@ func (encoder *Encoder) EncodeTExt(s string) error {
 	if err != nil {
 		return err
 	}
-
-	// Encode type
-	//encoder.Encode(raw.Type)
-	// map Index-Type
-	//encoder.Encode(uint8(code))
 
 	// Encode value
 	ans, err := json.Marshal(raw.Value)

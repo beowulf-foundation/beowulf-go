@@ -81,10 +81,13 @@ func (client *Client) SendTrx(strx []types.Operation, extension string) (*BResp,
 		return nil, err
 	}
 
-	ex := make([]interface{}, 1)
-	as := types.ExtensionJsonType{extension}
-	tas := types.ExtensionType{uint8(types.ExtJsonType.Code()), as}
-	ex[0] = &tas
+	ex := []interface{}{}
+	if len(extension) > 0 {
+		ex = make([]interface{}, 1)
+		as := types.ExtensionJsonType{extension}
+		tas := types.ExtensionType{uint8(types.ExtJsonType.Code()), as}
+		ex[0] = &tas
+	}
 
 	tx := transactions.NewSignedTransaction(&types.Transaction{
 		RefBlockNum:    transactions.RefBlockNum(refBlockNum),
@@ -105,31 +108,6 @@ func (client *Client) SendTrx(strx []types.Operation, extension string) (*BResp,
 
 	createdTime := time.Now().UTC()
 	tx.CreatedTime = types.UInt64(createdTime.Unix())
-
-	//var br BResp
-	//br.ID = "1"
-	//br.JSONTrx = "{\"name\":\"thu\"}"
-	////t := []string{"{\"name\":\"thu\"}"}
-	//var t []BResp
-	//var t1 testExt
-	//t1.tp = "string"
-	//t1.value = "test extension"
-
-	//var trx []*types.TAssetSymbol
-	//var tas types.TAssetSymbol
-	//var t1 types.AssetSymbol
-	//t1.Decimals = 5
-	//t1.AssetName = "ABC"
-	//tas.Type = "asset_symbol_type"
-	//tas.Value = t1
-	//t := &tas
-	//
-	//trx = append(trx, t)
-	//s := make([]interface{}, len(trx))
-	//for i, v := range trx {
-	//	s[i] = v
-	//}
-	//tx.Extensions = s //append(tx.Extensions, s)
 
 	// Obtain the key required for signing
 	privKeys, err := client.SigningKeys(strx[0])
@@ -196,10 +174,15 @@ func (client *Client) GetTrx(strx []types.Operation, extension string) (*types.T
 	if err != nil {
 		return nil, err
 	}
-	ex := make([]interface{}, 1)
-	as := types.ExtensionJsonType{extension}
-	tas := types.ExtensionType{uint8(types.ExtJsonType.Code()), as}
-	ex[0] = &tas
+
+	ex := []interface{}{}
+	if len(extension) > 0 {
+		ex = make([]interface{}, 1)
+		as := types.ExtensionJsonType{extension}
+		tas := types.ExtensionType{uint8(types.ExtJsonType.Code()), as}
+		ex[0] = &tas
+	}
+
 	tx := &types.Transaction{
 		RefBlockNum:    transactions.RefBlockNum(refBlockNum),
 		RefBlockPrefix: refBlockPrefix,

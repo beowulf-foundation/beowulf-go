@@ -165,7 +165,6 @@ func (ext *ExtensionType) MarshalTransaction(encoder *transaction.Encoder) error
 	str := string(ans)
 
 	enc := transaction.NewRollingEncoder(encoder)
-	//enc.EncodeUVarint(uint64(ExtJsonType.Code()))
 	enc.Encode(uint8(ExtJsonType.Code()))
 	enc.EncodeTExt(str)
 	return enc.Err()
