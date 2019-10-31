@@ -201,13 +201,13 @@ func (encoder *Encoder) EncodePubKey(s string) error {
 
 //EncodeSymbol converting Symbol to byte
 func (encoder *Encoder) EncodeSymbol(s string) error {
-	type symbol struct{
-		Decimals uint8 		`json:"decimals"`
-		AssetName string	`json:"name"`
+	type symbol struct {
+		Decimals  uint8  `json:"decimals"`
+		AssetName string `json:"name"`
 	}
 	var raw symbol
 	err := json.Unmarshal([]byte(s), &raw)
-	if err != nil{
+	if err != nil {
 		return err
 	}
 
@@ -224,5 +224,49 @@ func (encoder *Encoder) EncodeSymbol(s string) error {
 			return errors.Wrapf(err, "encoder: failed to write number: %v", 0)
 		}
 	}
+	return nil
+}
+
+func (encoder *Encoder) EncodeExt(s string) error {
+	type extensionjsontype struct {
+		Data string `json:"data"`
+	}
+	var raw extensionjsontype
+	err := json.Unmarshal([]byte(s), &raw)
+	if err != nil {
+		return err
+	}
+	encoder.Encode(raw.Data)
+
+	return nil
+}
+
+func (encoder *Encoder) EncodeTExt(s string) error {
+	type extensionjsontype struct {
+		Data string `json:"data"`
+	}
+	type extensiontype struct {
+		Type  uint8             `json:"type"`
+		Value extensionjsontype `json:"value"`
+	}
+	var raw extensiontype
+	err := json.Unmarshal([]byte(s), &raw)
+	if err != nil {
+		return err
+	}
+
+	// Encode type
+	//encoder.Encode(raw.Type)
+	// map Index-Type
+	//encoder.Encode(uint8(code))
+
+	// Encode value
+	ans, err := json.Marshal(raw.Value)
+	if err != nil {
+		return err
+	}
+	str := string(ans)
+	encoder.EncodeExt(str)
+
 	return nil
 }

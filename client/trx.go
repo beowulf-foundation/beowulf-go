@@ -62,7 +62,7 @@ func (client *Client) GetHeadBlockNum() (uint32, error) {
 }
 
 //SendTrx generates and sends an array of transactions to BEOWULF.
-func (client *Client) SendTrx(strx []types.Operation) (*BResp, error) {
+func (client *Client) SendTrx(strx []types.Operation, extension string) (*BResp, error) {
 	var bresp BResp
 
 	// Getting the necessary parameters
@@ -80,10 +80,16 @@ func (client *Client) SendTrx(strx []types.Operation) (*BResp, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	ex := make([]interface{}, 1)
+	as := types.ExtensionJsonType{extension}
+	tas := types.ExtensionType{uint8(types.ExtJsonType.Code()), as}
+	ex[0] = &tas
+
 	tx := transactions.NewSignedTransaction(&types.Transaction{
 		RefBlockNum:    transactions.RefBlockNum(refBlockNum),
 		RefBlockPrefix: refBlockPrefix,
-		Extensions:     [][]interface{}{},
+		Extensions:     ex, //[]interface{}{},
 	})
 
 	// Adding Operations to a Transaction
@@ -99,6 +105,31 @@ func (client *Client) SendTrx(strx []types.Operation) (*BResp, error) {
 
 	createdTime := time.Now().UTC()
 	tx.CreatedTime = types.UInt64(createdTime.Unix())
+
+	//var br BResp
+	//br.ID = "1"
+	//br.JSONTrx = "{\"name\":\"thu\"}"
+	////t := []string{"{\"name\":\"thu\"}"}
+	//var t []BResp
+	//var t1 testExt
+	//t1.tp = "string"
+	//t1.value = "test extension"
+
+	//var trx []*types.TAssetSymbol
+	//var tas types.TAssetSymbol
+	//var t1 types.AssetSymbol
+	//t1.Decimals = 5
+	//t1.AssetName = "ABC"
+	//tas.Type = "asset_symbol_type"
+	//tas.Value = t1
+	//t := &tas
+	//
+	//trx = append(trx, t)
+	//s := make([]interface{}, len(trx))
+	//for i, v := range trx {
+	//	s[i] = v
+	//}
+	//tx.Extensions = s //append(tx.Extensions, s)
 
 	// Obtain the key required for signing
 	privKeys, err := client.SigningKeys(strx[0])
@@ -148,7 +179,7 @@ func (client *Client) SendTrx(strx []types.Operation) (*BResp, error) {
 	return &bresp, nil
 }
 
-func (client *Client) GetTrx(strx []types.Operation) (*types.Transaction, error) {
+func (client *Client) GetTrx(strx []types.Operation, extension string) (*types.Transaction, error) {
 	// Getting the necessary parameters
 	refBlockNum, err := client.GetHeadBlockNum()
 	if err != nil {
@@ -164,10 +195,14 @@ func (client *Client) GetTrx(strx []types.Operation) (*types.Transaction, error)
 	if err != nil {
 		return nil, err
 	}
+	ex := make([]interface{}, 1)
+	as := types.ExtensionJsonType{extension}
+	tas := types.ExtensionType{uint8(types.ExtJsonType.Code()), as}
+	ex[0] = &tas
 	tx := &types.Transaction{
 		RefBlockNum:    transactions.RefBlockNum(refBlockNum),
 		RefBlockPrefix: refBlockPrefix,
-		Extensions:     [][]interface{}{},
+		Extensions:     ex, //[]interface{}{},
 	}
 
 	// Adding Operations to a Transaction

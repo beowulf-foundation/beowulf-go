@@ -77,7 +77,7 @@ func (client *Client) GetBalance(account, tokenName string, decimals uint8) (*st
 }
 
 //Transfer of funds to any user.
-func (client *Client) Transfer(fromName, toName, memo, amount, fee string) (*OperResp, error) {
+func (client *Client) Transfer(fromName, toName, memo, amount, fee string, extension string) (*OperResp, error) {
 	validate := validateFee(fee, config.MIN_TRANSACTION_FEE)
 	if validate == false {
 		return nil, errors.New("Fee is not valid")
@@ -95,16 +95,16 @@ func (client *Client) Transfer(fromName, toName, memo, amount, fee string) (*Ope
 		Memo:   memo,
 	}
 	trx = append(trx, tx)
-	resp, err := client.SendTrx(trx)
+	resp, err := client.SendTrx(trx, extension)
 	return &OperResp{NameOper: "Transfer", Bresp: resp}, err
 }
 
-func (client *Client) MultiOp(trx []types.Operation) (*OperResp, error) {
-	resp, err := client.SendTrx(trx)
+func (client *Client) MultiOp(trx []types.Operation, extension string) (*OperResp, error) {
+	resp, err := client.SendTrx(trx, extension)
 	return &OperResp{NameOper: "Multi", Bresp: resp}, err
 }
 
-func (client *Client) CreateToken(creator, controlAcc, tokenName string, decimals uint8, maxSupply uint64) (*OperResp, error) {
+func (client *Client) CreateToken(creator, controlAcc, tokenName string, decimals uint8, maxSupply uint64, extension string) (*OperResp, error) {
 	//config, err := client.API.GetConfig()
 	//if err != nil{
 	//	return nil, err
@@ -123,12 +123,12 @@ func (client *Client) CreateToken(creator, controlAcc, tokenName string, decimal
 	}
 
 	trx = append(trx, tx)
-	resp, err := client.SendTrx(trx)
+	resp, err := client.SendTrx(trx, extension)
 	return &OperResp{NameOper: "SmtCreate", Bresp: resp}, err
 }
 
 //AccountSupernodeVote of voting for the delegate.
-func (client *Client) AccountSupernodeVote(username, witnessName, fee string, votes int64) (*OperResp, error) {
+func (client *Client) AccountSupernodeVote(username, witnessName, fee string, votes int64, extension string) (*OperResp, error) {
 	validate := validateFee(fee, config.MIN_TRANSACTION_FEE)
 	if validate == false {
 		return nil, errors.New("Fee is not valid")
@@ -146,12 +146,12 @@ func (client *Client) AccountSupernodeVote(username, witnessName, fee string, vo
 	}
 
 	trx = append(trx, tx)
-	resp, err := client.SendTrx(trx)
+	resp, err := client.SendTrx(trx, extension)
 	return &OperResp{NameOper: "AccountSupernodeVote", Bresp: resp}, err
 }
 
 //Unvote
-func (client *Client) AccountSupernodeUnvote(username, witnessName, fee string) (*OperResp, error) {
+func (client *Client) AccountSupernodeUnvote(username, witnessName, fee string, extension string) (*OperResp, error) {
 	validate := validateFee(fee, config.MIN_TRANSACTION_FEE)
 	if validate == false {
 		return nil, errors.New("Fee is not valid")
@@ -166,12 +166,12 @@ func (client *Client) AccountSupernodeUnvote(username, witnessName, fee string) 
 	}
 
 	trx = append(trx, tx)
-	resp, err := client.SendTrx(trx)
+	resp, err := client.SendTrx(trx, extension)
 	return &OperResp{NameOper: "AccountSupernodeVote", Bresp: resp}, err
 }
 
 //TransferToVesting transfer to POWER
-func (client *Client) TransferToVesting(from, to, amount, fee string) (*OperResp, error) {
+func (client *Client) TransferToVesting(from, to, amount, fee string, extension string) (*OperResp, error) {
 	validate := validateFee(fee, config.MIN_TRANSACTION_FEE)
 	if validate == false {
 		return nil, errors.New("Fee is not valid")
@@ -189,12 +189,12 @@ func (client *Client) TransferToVesting(from, to, amount, fee string) (*OperResp
 	}
 
 	trx = append(trx, tx)
-	resp, err := client.SendTrx(trx)
+	resp, err := client.SendTrx(trx, extension)
 	return &OperResp{NameOper: "TransferToVesting", Bresp: resp}, err
 }
 
 //WithdrawVesting down POWER
-func (client *Client) WithdrawVesting(account, vshares, fee string) (*OperResp, error) {
+func (client *Client) WithdrawVesting(account, vshares, fee string, extension string) (*OperResp, error) {
 	validate := validateFee(fee, config.MIN_TRANSACTION_FEE)
 	if validate == false {
 		return nil, errors.New("Fee is not valid")
@@ -211,12 +211,12 @@ func (client *Client) WithdrawVesting(account, vshares, fee string) (*OperResp, 
 	}
 
 	trx = append(trx, tx)
-	resp, err := client.SendTrx(trx)
+	resp, err := client.SendTrx(trx, extension)
 	return &OperResp{NameOper: "WithdrawVesting", Bresp: resp}, err
 }
 
 //SupernodeUpdate updating delegate data
-func (client *Client) SupernodeUpdate(owner, blocksigningkey, fee string) (*OperResp, error) {
+func (client *Client) SupernodeUpdate(owner, blocksigningkey, fee string, extension string) (*OperResp, error) {
 	validate := validateFee(fee, config.MIN_TRANSACTION_FEE)
 	if validate == false {
 		return nil, errors.New("Fee is not valid")
@@ -229,7 +229,7 @@ func (client *Client) SupernodeUpdate(owner, blocksigningkey, fee string) (*Oper
 	}
 
 	trx = append(trx, tx)
-	resp, err := client.SendTrx(trx)
+	resp, err := client.SendTrx(trx, extension)
 	return &OperResp{NameOper: "SupernodeUpdate", Bresp: resp}, err
 }
 
@@ -243,7 +243,7 @@ func (client *Client) GenKeys(newAccountName string) (*WalletData, error) {
 	return &WalletData{Name: newAccountName, PrivateKey: priv, PublicKey: pub}, nil
 }
 
-func (client *Client) AccountCreate(creator, newAccountName, publicKey, fee string) (*OperResp, error) {
+func (client *Client) AccountCreate(creator, newAccountName, publicKey, fee string, extension string) (*OperResp, error) {
 	validate := validateFee(fee, config.MIN_ACCOUNT_CREATION_FEE)
 	if validate == false {
 		return nil, errors.New("Fee is not valid")
@@ -267,11 +267,11 @@ func (client *Client) AccountCreate(creator, newAccountName, publicKey, fee stri
 	}
 
 	trx = append(trx, tx)
-	resp, err := client.SendTrx(trx)
+	resp, err := client.SendTrx(trx, extension)
 	return &OperResp{NameOper: "AccountCreate", Bresp: resp}, err
 }
 
-func (client *Client) AccountCreateWS(creator, newAccountName, password, fee string) (*OperResp, error) {
+func (client *Client) AccountCreateWS(creator, newAccountName, password, fee string, extension string) (*OperResp, error) {
 	validate := validateFee(fee, config.MIN_ACCOUNT_CREATION_FEE)
 	if validate == false {
 		return nil, errors.New("Fee is not valid")
@@ -308,12 +308,12 @@ func (client *Client) AccountCreateWS(creator, newAccountName, password, fee str
 	}
 
 	trx = append(trx, tx)
-	resp, err := client.SendTrx(trx)
+	resp, err := client.SendTrx(trx, extension)
 	return &OperResp{NameOper: "AccountCreateWS", Bresp: resp}, err
 }
 
 //CreateMultiSigAccount creating an account shared among many users in systems
-func (client *Client) CreateMultiSigAccount(creator, newAccountName, fee string, owners []string) (*OperResp, error) {
+func (client *Client) CreateMultiSigAccount(creator, newAccountName, fee string, owners []string, extension string) (*OperResp, error) {
 	validate := validateFee(fee, config.MIN_ACCOUNT_CREATION_FEE)
 	if validate == false {
 		return nil, errors.New("Fee is not valid")
@@ -350,13 +350,13 @@ func (client *Client) CreateMultiSigAccount(creator, newAccountName, fee string,
 	}
 
 	trx = append(trx, tx)
-	resp, err := client.SendTrx(trx)
+	resp, err := client.SendTrx(trx, extension)
 	return &OperResp{NameOper: "AccountCreate", Bresp: resp}, err
 }
 
 //AccountUpdate update owner keys for account
 //TODO: every key has different weight on account
-func (client *Client) AccountUpdate(account, fee string, owners []string) (*OperResp, error) {
+func (client *Client) AccountUpdate(account, fee string, owners []string, extension string) (*OperResp, error) {
 	validate := validateFee(fee, config.MIN_TRANSACTION_FEE)
 	if validate == false {
 		return nil, errors.New("Fee is not valid")
@@ -392,7 +392,7 @@ func (client *Client) AccountUpdate(account, fee string, owners []string) (*Oper
 	}
 
 	trx = append(trx, tx)
-	resp, err := client.SendTrx(trx)
+	resp, err := client.SendTrx(trx, extension)
 	return &OperResp{NameOper: "AccountUpdate", Bresp: resp}, err
 }
 
