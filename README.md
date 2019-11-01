@@ -97,7 +97,7 @@ if len(exlist) > 0 {
 
 //6. Transfer native coin
 //6.1. Transfer BWF from alice to bob
-resp_bwf, err := cls.Transfer("alice", "bob", "", "100.00000 BWF", "0.01000 W")
+resp_bwf, err := cls.Transfer("alice", "bob", "", "100.00000 BWF", "0.01000 W", "")
 if err != nil {
     fmt.Println(err)
 }
@@ -105,7 +105,7 @@ json_rbwf, _ := json.Marshal(resp_bwf)
 fmt.Println(string(json_rbwf))
 
 //6.2. Transfer W from alice to bob
-resp_w, err := cls.Transfer("alice", "bob", "", "10.00000 W", "0.01000 W")
+resp_w, err := cls.Transfer("alice", "bob", "", "10.00000 W", "0.01000 W", "")
 if err != nil {
     fmt.Println(err)
 }
@@ -114,7 +114,7 @@ fmt.Println(string(json_rw))
 
 //7. Transfer token
 //Transfer token KNOW from alice to bob
-resp_tk, err := cls.Transfer("alice", "bob", "", "1000.00000 KNOW", "0.01000 W")
+resp_tk, err := cls.Transfer("alice", "bob", "", "1000.00000 KNOW", "0.01000 W", "")
 if err != nil {
     fmt.Println(err)
 }
