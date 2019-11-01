@@ -3,7 +3,7 @@ package types
 type ExtType string
 
 func (kind ExtType) Code() uint16 {
-	return extCodes[kind]
+	return ExtCodes[kind]
 }
 
 const (
@@ -16,11 +16,21 @@ var extTypes = [...]ExtType{
 	ExtJsonType,
 }
 
-var extCodes map[ExtType]uint16
+var ExtCodes map[ExtType]uint16
 
 func init() {
-	extCodes = make(map[ExtType]uint16, len(extTypes))
+	ExtCodes = make(map[ExtType]uint16, len(extTypes))
 	for i, extType := range extTypes {
-		extCodes[extType] = uint16(i)
+		ExtCodes[extType] = uint16(i)
 	}
+}
+
+func GetExtCodes(s string) uint16 {
+	switch s {
+	case string(Void):
+		return ExtCodes[Void]
+	case string(ExtJsonType):
+		return ExtCodes[ExtJsonType]
+	}
+	return ExtCodes[Void]
 }
