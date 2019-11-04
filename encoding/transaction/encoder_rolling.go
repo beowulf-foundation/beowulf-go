@@ -53,6 +53,18 @@ func (encoder *RollingEncoder) EncodeSymbol(v string) {
 	}
 }
 
+func (encoder *RollingEncoder) EncodeExt(v string) {
+	if encoder.err == nil {
+		encoder.err = encoder.next.EncodeExt(v)
+	}
+}
+
+func (encoder *RollingEncoder) EncodeTExt(v string) {
+	if encoder.err == nil {
+		encoder.err = encoder.next.EncodeTExt(v)
+	}
+}
+
 //EncodeString adding string to the converted value
 func (encoder *RollingEncoder) EncodeString(v string) {
 	if encoder.err == nil {

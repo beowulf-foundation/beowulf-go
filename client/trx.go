@@ -58,7 +58,7 @@ func (client *Client) GetHeadBlockNum() (uint32, error) {
 }
 
 //SendTrx generates and sends an array of transactions to BEOWULF.
-func (client *Client) SendTrx(strx []types.Operation) (*BResp, error) {
+func (client *Client) SendTrx(strx []types.Operation, extension string) (*BResp, error) {
 	var bresp BResp
 
 	// Getting the necessary parameters
@@ -76,10 +76,19 @@ func (client *Client) SendTrx(strx []types.Operation) (*BResp, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	ex := []interface{}{}
+	if len(extension) > 0 {
+		ex = make([]interface{}, 1)
+		as := types.ExtensionJsonType{extension}
+		tas := types.ExtensionType{uint8(types.ExtJsonType.Code()), as}
+		ex[0] = &tas
+	}
+
 	tx := transactions.NewSignedTransaction(&types.Transaction{
 		RefBlockNum:    transactions.RefBlockNum(refBlockNum),
 		RefBlockPrefix: refBlockPrefix,
-		Extensions:     [][]interface{}{},
+		Extensions:     ex, //[]interface{}{},
 	})
 
 	// Adding Operations to a Transaction
@@ -133,7 +142,7 @@ func (client *Client) SendTrx(strx []types.Operation) (*BResp, error) {
 	return &bresp, nil
 }
 
-func (client *Client) GetTrx(strx []types.Operation) (*types.Transaction, error) {
+func (client *Client) GetTrx(strx []types.Operation, extension string) (*types.Transaction, error) {
 	// Getting the necessary parameters
 	refBlockNum, err := client.GetHeadBlockNum()
 	if err != nil {
@@ -149,10 +158,19 @@ func (client *Client) GetTrx(strx []types.Operation) (*types.Transaction, error)
 	if err != nil {
 		return nil, err
 	}
+
+	ex := []interface{}{}
+	if len(extension) > 0 {
+		ex = make([]interface{}, 1)
+		as := types.ExtensionJsonType{extension}
+		tas := types.ExtensionType{uint8(types.ExtJsonType.Code()), as}
+		ex[0] = &tas
+	}
+
 	tx := &types.Transaction{
 		RefBlockNum:    transactions.RefBlockNum(refBlockNum),
 		RefBlockPrefix: refBlockPrefix,
-		Extensions:     [][]interface{}{},
+		Extensions:     ex, //[]interface{}{},
 	}
 
 	// Adding Operations to a Transaction

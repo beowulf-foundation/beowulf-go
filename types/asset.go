@@ -1,10 +1,10 @@
 package types
 
 import (
+	"beowulf-go/encoding/transaction"
 	"encoding/json"
 	"strconv"
 	"strings"
-	"beowulf-go/encoding/transaction"
 )
 
 //Asset type from parameter JSON
@@ -13,9 +13,13 @@ type Asset struct {
 	Symbol string
 }
 
-type AssetSymbol struct{
-	Decimals uint8 		`json:"decimals"`
-	AssetName string	`json:"name"`
+type AssetSymbol struct {
+	Decimals  uint8  `json:"decimals"`
+	AssetName string `json:"name"`
+}
+
+type ExtensionJsonType struct {
+	Data string `json:"data"`
 }
 
 //UnmarshalJSON unpacking the JSON parameter in the Asset type.
@@ -72,7 +76,7 @@ func (op *Asset) StringAmount() string {
 func (op *AssetSymbol) UnmarshalJSON(data []byte) error {
 	var raw AssetSymbol
 
-	str := string (data)//strconv.Unquote(string(data))
+	str := string(data) //strconv.Unquote(string(data))
 	if str == "" {
 		return nil
 	}
@@ -106,5 +110,62 @@ func (op *AssetSymbol) MarshalTransaction(encoder *transaction.Encoder) error {
 
 	enc := transaction.NewRollingEncoder(encoder)
 	enc.EncodeSymbol(str)
+	return enc.Err()
+}
+
+func (ext *ExtensionJsonType) UnmarshalJSON(data []byte) error {
+	var raw ExtensionJsonType
+
+	str := string(data) //strconv.Unquote(string(data))
+	if str == "" {
+		return nil
+	}
+
+	if err := json.Unmarshal([]byte(str), &raw); err != nil {
+		return err
+	}
+
+	ext.Data = raw.Data
+	return nil
+}
+
+func (ext *ExtensionJsonType) MarshalJSON() ([]byte, error) {
+	ans, err := json.Marshal(*ext)
+	if err != nil {
+		return []byte{}, err
+	}
+	return ans, nil
+}
+
+func (ext *ExtensionJsonType) MarshalTransaction(encoder *transaction.Encoder) error {
+	ans, err := json.Marshal(*ext)
+	if err != nil {
+		return err
+	}
+
+	str := string(ans)
+
+	enc := transaction.NewRollingEncoder(encoder)
+	enc.EncodeExt(str)
+	return enc.Err()
+}
+
+type ExtensionType struct {
+	Type  uint8             `json:"type"`
+	Value ExtensionJsonType `json:"value"`
+}
+
+//MarshalTransaction is a function of converting type AssetSymbol to bytes.
+func (ext *ExtensionType) MarshalTransaction(encoder *transaction.Encoder) error {
+	ans, err := json.Marshal(*ext)
+	if err != nil {
+		return err
+	}
+
+	str := string(ans)
+
+	enc := transaction.NewRollingEncoder(encoder)
+	enc.Encode(uint8(ExtJsonType.Code()))
+	enc.EncodeTExt(str)
 	return enc.Err()
 }

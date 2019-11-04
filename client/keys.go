@@ -58,7 +58,7 @@ func (client *Client) SetKeys(keys *Keys) {
 func (client *Client) GetPrivateKey() string {
 	if client.CurrentKeys != nil {
 		for _, privKey := range client.CurrentKeys.OKey {
-			return  privKey
+			return privKey
 		}
 	}
 	return ""
@@ -118,7 +118,7 @@ func (client *Client) GetSigningKeysOwner() ([][]byte, error) {
 
 //CreatePrivateKey generates a private key based on the specified parameters.
 func CreatePrivateKey(user, role, password string) string {
-	new_password := password + Wallet_.Salt;
+	new_password := password + Wallet_.Salt
 	hashSha256 := sha256.Sum256([]byte(user + role + new_password))
 	pk := append([]byte{0x80}, hashSha256[:]...)
 	chs := sha256.Sum256(pk)

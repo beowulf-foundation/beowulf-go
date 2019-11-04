@@ -1,19 +1,22 @@
 package types
 
 import (
-	"errors"
 	"beowulf-go/encoding/transaction"
+	"errors"
 )
 
 // Transaction represents a blockchain transaction.
 type Transaction struct {
-	RefBlockNum    UInt16     `json:"ref_block_num"`
-	RefBlockPrefix UInt32     `json:"ref_block_prefix"`
-	Expiration     *Time      `json:"expiration"`
-	Operations     Operations `json:"operations"`
-	Extensions     [][]interface{}      `json:"extensions"`
-	CreatedTime	   UInt64	  `json:"created_time"`
-	Signatures     []string   `json:"signatures"`
+	//transaction_id_type        transaction_id;
+	//uint32_t                   block_num = 0;
+	//uint32_t                   transaction_num = 0;
+	RefBlockNum    UInt16        `json:"ref_block_num"`
+	RefBlockPrefix UInt32        `json:"ref_block_prefix"`
+	Expiration     *Time         `json:"expiration"`
+	Operations     Operations    `json:"operations"`
+	Extensions     []interface{} `json:"extensions"`
+	CreatedTime    UInt64        `json:"created_time"`
+	Signatures     []string      `json:"signatures"`
 }
 
 // MarshalTransaction implements transaction.Marshaller interface.
@@ -34,7 +37,15 @@ func (tx *Transaction) MarshalTransaction(encoder *transaction.Encoder) error {
 	}
 
 	// Extensions are not supported yet.
-	enc.EncodeUVarint(0)
+	if len(tx.Extensions) > 0 {
+		enc.EncodeUVarint(uint64(len(tx.Extensions)))
+		for _, ext := range tx.Extensions {
+			enc.Encode(ext)
+		}
+	} else {
+		enc.EncodeUVarint(0)
+	}
+
 	enc.Encode(tx.CreatedTime)
 	for _, sig := range tx.Signatures {
 		enc.Encode(sig)

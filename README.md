@@ -54,12 +54,50 @@ fmt.Println(string(json_bk))
 
 //5. Get transaction
 trx, err := cls.API.GetTransaction("673fbd4609d1156bcf6d9e6c36388926f7116acc")
+if err != nil {
+    fmt.Println(err)
+}
 json_trx, _ := json.Marshal(trx)
 fmt.Println(string(json_trx))
+oplist := *trx.Operations
+for _, op := range oplist {
+    d := op.Data()
+    switch d.(type){
+    case *types.TransferOperation:
+        byteData, _ := json.Marshal(d)
+        oop := types.TransferOperation{}
+        json.Unmarshal(byteData, &oop)
+        fmt.Println(oop)
+        fmt.Println("From:", oop.From)
+        fmt.Println("To:", oop.To)
+        fmt.Println("Amount:", oop.Amount)
+        fmt.Println("Fee:", oop.Fee)
+        fmt.Println("Memo:", oop.Memo)
+    }
+}
+exlist := trx.Extensions
+if len(exlist) > 0 {
+    tmp := exlist[0]
+    byteex, _ := json.Marshal(tmp)
+    var met map[string]interface{}
+    json.Unmarshal(byteex, &met)
+
+    et := types.ExtensionType{}
+    stype := fmt.Sprintf("%v", met["type"])
+    et.Type = uint8(types.GetExtCodes(stype))
+
+    value := met["value"].(map[string]interface{})
+    ejt := types.ExtensionJsonType{}
+    ejt.Data = fmt.Sprintf("%v", value["data"])
+    et.Value = ejt
+
+    fmt.Println(ejt)
+    fmt.Println(et)
+}
 
 //6. Transfer native coin
 //6.1. Transfer BWF from alice to bob
-resp_bwf, err := cls.Transfer("alice", "bob", "", "100.00000 BWF", "0.01000 W")
+resp_bwf, err := cls.Transfer("alice", "bob", "", "100.00000 BWF", "0.01000 W", "")
 if err != nil {
     fmt.Println(err)
 }
@@ -67,7 +105,7 @@ json_rbwf, _ := json.Marshal(resp_bwf)
 fmt.Println(string(json_rbwf))
 
 //6.2. Transfer W from alice to bob
-resp_w, err := cls.Transfer("alice", "bob", "", "10.00000 W", "0.01000 W")
+resp_w, err := cls.Transfer("alice", "bob", "", "10.00000 W", "0.01000 W", "")
 if err != nil {
     fmt.Println(err)
 }
@@ -76,7 +114,7 @@ fmt.Println(string(json_rw))
 
 //7. Transfer token
 //Transfer token KNOW from alice to bob
-resp_tk, err := cls.Transfer("alice", "bob", "", "1000.00000 KNOW", "0.01000 W")
+resp_tk, err := cls.Transfer("alice", "bob", "", "1000.00000 KNOW", "0.01000 W", "")
 if err != nil {
     fmt.Println(err)
 }

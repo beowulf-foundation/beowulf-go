@@ -79,7 +79,7 @@ func (client *Client) GetBalance(account, tokenName string, decimals uint8) (*st
 }
 
 //Transfer of funds to any user.
-func (client *Client) Transfer(fromName, toName, memo, amount, fee string) (*OperResp, error) {
+func (client *Client) Transfer(fromName, toName, memo, amount, fee string, extension string) (*OperResp, error) {
 	validate := ValidateFee(fee, config.MIN_TRANSACTION_FEE)
 	if validate == false {
 		return nil, errors.New("Fee is not valid")
@@ -97,16 +97,22 @@ func (client *Client) Transfer(fromName, toName, memo, amount, fee string) (*Ope
 		Memo:   memo,
 	}
 	trx = append(trx, tx)
-	resp, err := client.SendTrx(trx)
+	resp, err := client.SendTrx(trx, extension)
 	return &OperResp{NameOper: "Transfer", Bresp: resp}, err
 }
 
-func (client *Client) MultiOp(trx []types.Operation) (*OperResp, error) {
-	resp, err := client.SendTrx(trx)
+func (client *Client) MultiOp(trx []types.Operation, extension string) (*OperResp, error) {
+	resp, err := client.SendTrx(trx, extension)
 	return &OperResp{NameOper: "Multi", Bresp: resp}, err
 }
 
 func (client *Client) CreateToken(creator, controlAcc, tokenName string, decimals uint8, maxSupply uint64) (*OperResp, error) {
+	//config, err := client.API.GetConfig()
+	//if err != nil{
+	//	return nil, err
+	//}
+	//feeAmt := config.TokenCreationFee
+
 	var trx []types.Operation
 	tx := &types.SmtCreateOperation{
 		ControlAccount: controlAcc,
@@ -119,7 +125,7 @@ func (client *Client) CreateToken(creator, controlAcc, tokenName string, decimal
 	}
 
 	trx = append(trx, tx)
-	resp, err := client.SendTrx(trx)
+	resp, err := client.SendTrx(trx, "")
 	return &OperResp{NameOper: "SmtCreate", Bresp: resp}, err
 }
 
@@ -142,13 +148,14 @@ func (client *Client) AccountSupernodeVote(username, witnessName, fee string, vo
 	}
 
 	trx = append(trx, tx)
-	resp, err := client.SendTrx(trx)
+	resp, err := client.SendTrx(trx, "")
 	return &OperResp{NameOper: "AccountSupernodeVote", Bresp: resp}, err
 }
 
 //Unvote
 func (client *Client) AccountSupernodeUnvote(username, witnessName, fee string) (*OperResp, error) {
 	validate := ValidateFee(fee, config.MIN_TRANSACTION_FEE)
+
 	if validate == false {
 		return nil, errors.New("Fee is not valid")
 	}
@@ -162,7 +169,7 @@ func (client *Client) AccountSupernodeUnvote(username, witnessName, fee string) 
 	}
 
 	trx = append(trx, tx)
-	resp, err := client.SendTrx(trx)
+	resp, err := client.SendTrx(trx, "")
 	return &OperResp{NameOper: "AccountSupernodeVote", Bresp: resp}, err
 }
 
@@ -185,13 +192,14 @@ func (client *Client) TransferToVesting(from, to, amount, fee string) (*OperResp
 	}
 
 	trx = append(trx, tx)
-	resp, err := client.SendTrx(trx)
+	resp, err := client.SendTrx(trx, "")
 	return &OperResp{NameOper: "TransferToVesting", Bresp: resp}, err
 }
 
 //WithdrawVesting down POWER
 func (client *Client) WithdrawVesting(account, vshares, fee string) (*OperResp, error) {
 	validate := ValidateFee(fee, config.MIN_TRANSACTION_FEE)
+
 	if validate == false {
 		return nil, errors.New("Fee is not valid")
 	}
@@ -207,13 +215,14 @@ func (client *Client) WithdrawVesting(account, vshares, fee string) (*OperResp, 
 	}
 
 	trx = append(trx, tx)
-	resp, err := client.SendTrx(trx)
+	resp, err := client.SendTrx(trx, "")
 	return &OperResp{NameOper: "WithdrawVesting", Bresp: resp}, err
 }
 
 //SupernodeUpdate updating delegate data
 func (client *Client) SupernodeUpdate(owner, blocksigningkey, fee string) (*OperResp, error) {
 	validate := ValidateFee(fee, config.MIN_TRANSACTION_FEE)
+
 	if validate == false {
 		return nil, errors.New("Fee is not valid")
 	}
@@ -225,7 +234,7 @@ func (client *Client) SupernodeUpdate(owner, blocksigningkey, fee string) (*Oper
 	}
 
 	trx = append(trx, tx)
-	resp, err := client.SendTrx(trx)
+	resp, err := client.SendTrx(trx, "")
 	return &OperResp{NameOper: "SupernodeUpdate", Bresp: resp}, err
 }
 
@@ -267,7 +276,7 @@ func (client *Client) AccountCreate(creator, newAccountName, publicKey, fee stri
 	}
 
 	trx = append(trx, tx)
-	resp, err := client.SendTrx(trx)
+	resp, err := client.SendTrx(trx, "")
 	return &OperResp{NameOper: "AccountCreate", Bresp: resp}, err
 }
 
@@ -299,11 +308,12 @@ func (client *Client) AccountUpdate(account, publicKey, fee string) (*OperResp, 
 	}
 
 	trx = append(trx, tx)
-	resp, err := client.SendTrx(trx)
+	resp, err := client.SendTrx(trx, "")
 	return &OperResp{NameOper: "AccountUpdate", Bresp: resp}, err
 }
 
 func (client *Client) AccountCreateWS(creator, newAccountName, password, fee string) (*OperResp, error) {
+
 	err := ValidateNameAccount(newAccountName)
 	if err != nil {
 		return nil, err
@@ -344,24 +354,26 @@ func (client *Client) AccountCreateWS(creator, newAccountName, password, fee str
 	}
 
 	trx = append(trx, tx)
-	resp, err := client.SendTrx(trx)
+	resp, err := client.SendTrx(trx, "")
 	return &OperResp{NameOper: "AccountCreateWS", Bresp: resp}, err
 }
 
 //CreateMultiSigAccount creating an account shared among many users in systems
-func (client *Client) CreateMultiSigAccount(creator, newAccountName, fee string, accountOwners []string, keyOwners []string, threshold uint32) (*OperResp, error) {
+func (client *Client) CreateMultiSigAccount(creator, newAccountName, fee string, accountOwners []string, keyOwners []string,
+	threshold uint32) (*OperResp, error) {
 	err := ValidateNameAccount(newAccountName)
 	if err != nil {
 		return nil, err
 	}
 	validate := ValidateFee(fee, config.MIN_ACCOUNT_CREATION_FEE)
+
 	if validate == false {
 		return nil, errors.New("Fee is not valid")
 	}
-	if len(keyOwners) + len(accountOwners) == 0 {
+	if len(keyOwners)+len(accountOwners) == 0 {
 		return nil, errors.New("accountOwners + keyOwners is not empty")
 	}
-	if threshold == 0 || threshold > uint32(len(keyOwners) + len(accountOwners)) {
+	if threshold == 0 || threshold > uint32(len(keyOwners)+len(accountOwners)) {
 		return nil, errors.New("threshold is not valid")
 	}
 	//Sort owners
@@ -397,25 +409,27 @@ func (client *Client) CreateMultiSigAccount(creator, newAccountName, fee string,
 	}
 
 	trx = append(trx, tx)
-	resp, err := client.SendTrx(trx)
+	resp, err := client.SendTrx(trx, "")
 	return &OperResp{NameOper: "AccountCreate", Bresp: resp}, err
 }
 
 //AccountUpdate update owner keys for account
 //TODO: every key has different weight on account
+
 func (client *Client) UpdateMultiSigAccount(account, fee string, accountOwners []string, keyOwners []string, threshold uint32) (*OperResp, error) {
 	err := ValidateNameAccount(account)
 	if err != nil {
 		return nil, err
 	}
 	validate := ValidateFee(fee, config.MIN_TRANSACTION_FEE)
+
 	if validate == false {
 		return nil, errors.New("Fee is not valid")
 	}
-	if len(keyOwners) + len(accountOwners) == 0 {
+	if len(keyOwners)+len(accountOwners) == 0 {
 		return nil, errors.New("accountOwners + keyOwners is not empty")
 	}
-	if threshold == 0 || threshold > uint32(len(keyOwners) + len(accountOwners)) {
+	if threshold == 0 || threshold > uint32(len(keyOwners)+len(accountOwners)) {
 		return nil, errors.New("threshold is not valid")
 	}
 	//Sort owners
@@ -450,11 +464,11 @@ func (client *Client) UpdateMultiSigAccount(account, fee string, accountOwners [
 	}
 
 	trx = append(trx, tx)
-	resp, err := client.SendTrx(trx)
+	resp, err := client.SendTrx(trx, "")
 	return &OperResp{NameOper: "AccountUpdate", Bresp: resp}, err
 }
 
-func (client *Client) CreateTrxTransfer(fromName, toName, memo, amount, fee string) (*transactions.SignedTransaction, error) {
+func (client *Client) CreateTrxTransfer(fromName, toName, memo, amount, fee string, extension string) (*transactions.SignedTransaction, error) {
 	validate := ValidateFee(fee, config.MIN_TRANSACTION_FEE)
 	if validate == false {
 		return nil, errors.New("Fee is not valid")
@@ -474,12 +488,12 @@ func (client *Client) CreateTrxTransfer(fromName, toName, memo, amount, fee stri
 	trxOps = append(trxOps, tOp)
 
 	// CreateTrx
-	tx, err := client.CreateTrx(trxOps)
+	tx, err := client.CreateTrx(trxOps, extension)
 
 	return tx, err
 }
 
-func (client *Client) CreateTrx(trxOps []types.Operation) (*transactions.SignedTransaction, error) {
+func (client *Client) CreateTrx(trxOps []types.Operation, extension string) (*transactions.SignedTransaction, error) {
 	// Getting the necessary parameters
 	refBlockNum, err := client.GetHeadBlockNum()
 	if err != nil {
@@ -495,10 +509,19 @@ func (client *Client) CreateTrx(trxOps []types.Operation) (*transactions.SignedT
 	if err != nil {
 		return nil, err
 	}
+
+	ex := []interface{}{}
+	if len(extension) > 0 {
+		ex = make([]interface{}, 1)
+		as := types.ExtensionJsonType{extension}
+		tas := types.ExtensionType{uint8(types.ExtJsonType.Code()), as}
+		ex[0] = &tas
+	}
+
 	tx := transactions.NewSignedTransaction(&types.Transaction{
 		RefBlockNum:    transactions.RefBlockNum(refBlockNum),
 		RefBlockPrefix: refBlockPrefix,
-		Extensions:     [][]interface{}{},
+		Extensions:     ex,
 	})
 
 	// Adding Operations to a Transaction
@@ -555,6 +578,7 @@ func (client *Client) SendTrxMultiSig(tx *transactions.SignedTransaction) (*BRes
 	var bresp BResp
 	var err error
 	// Sending a transaction
+	//var errb error
 	if client.AsyncProtocol {
 		var resp *api.AsyncBroadcastResponse
 		resp, err = client.API.BroadcastTransaction(tx.Transaction)
@@ -585,7 +609,7 @@ func ValidateNameAccount(name string) error {
 	if len(name) < 3 || len(name) > 16 {
 		return errors.New("Name length is from 3 to 16 characters")
 	}
-	for _,c := range name {
+	for _, c := range name {
 		if !strings.Contains(config.NAME_LETTER, string(c)) {
 			return errors.New("Name contains character invalid")
 		}
