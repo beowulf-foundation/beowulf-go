@@ -232,10 +232,3 @@ type TransactionResponse struct {
 	Status         string            `json:"status"`
 }
 
-type Version1 struct {
-
-	//HardforkVersionVote() {}
-	//hardfork_version_vote( hardfork_version v, fc::time_point_sec t ):hf_version( v ),hf_time( t ) {}
-
-	VNum *types.UInt32 `json:"v_num"`
-}
