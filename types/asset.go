@@ -22,6 +22,11 @@ type ExtensionJsonType struct {
 	Data string `json:"data"`
 }
 
+type ExtensionType struct {
+	Type  uint8             `json:"type"`
+	Value ExtensionJsonType `json:"value"`
+}
+
 //UnmarshalJSON unpacking the JSON parameter in the Asset type.
 func (op *Asset) UnmarshalJSON(data []byte) error {
 	str, errUnq := strconv.Unquote(string(data))
@@ -148,11 +153,6 @@ func (ext *ExtensionJsonType) MarshalTransaction(encoder *transaction.Encoder) e
 	enc := transaction.NewRollingEncoder(encoder)
 	enc.EncodeExt(str)
 	return enc.Err()
-}
-
-type ExtensionType struct {
-	Type  uint8             `json:"type"`
-	Value ExtensionJsonType `json:"value"`
 }
 
 //MarshalTransaction is a function of converting type AssetSymbol to bytes.

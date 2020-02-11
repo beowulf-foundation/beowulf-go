@@ -263,12 +263,10 @@ func SaveWalletFile(wallet_path string, wallet_filename string, password string,
 		return errors.New("WalletData is invalid.")
 	}
 
-	//
 	// Serialize in memory, then save to disk
 	//
 	// This approach lessens the risk of a partially written wallet
 	// if exceptions are thrown in serialization
-	//
 	keys := make(map[string]string)
 	keys[wallet_data.PublicKey] = wallet_data.PrivateKey
 	salt := RandStringBytes(16)
