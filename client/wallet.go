@@ -300,3 +300,76 @@ func SaveWalletFile(wallet_path string, wallet_filename string, password string,
 	}
 	return err
 }
+
+func EncodeWallet(password string, wallet_data *WalletData) (string, error) {
+	// Validate data
+	if password == "" {
+		return "", errors.New("Password is not empty.")
+	}
+	if len(password) < 8 {
+		return "", errors.New("Password length >= 8 character.")
+	}
+	if wallet_data == nil || wallet_data.Name == "" || wallet_data.PrivateKey == "" || wallet_data.PublicKey == "" {
+		return "", errors.New("WalletData is invalid.")
+	}
+
+	// Serialize in memory, then save to disk
+	//
+	// This approach lessens the risk of a partially written wallet
+	// if exceptions are thrown in serialization
+	keys := make(map[string]string)
+	keys[wallet_data.PublicKey] = wallet_data.PrivateKey
+	salt := RandStringBytes(16)
+	new_password := password + salt
+	checksum := sha512.Sum512([]byte(new_password))
+
+	var plainKeys PlainKeys
+	plainKeys.Keys = keys
+	copy(plainKeys.Checksum[:], checksum[:])
+	plainData, err := json.Marshal(plainKeys)
+	if err != nil {
+		return "", err
+	}
+	plainTxt := string(plainData)
+	cipherKeys, err := Encrypt(plainKeys.Checksum[:], plainTxt)
+
+	wl := Wallet{CipherKeys: cipherKeys, CipherType: "aes-256-cbc", Name: wallet_data.Name, Salt: salt}
+	data, err := json.Marshal(wl)
+	if err != nil {
+		return "", err
+	}
+	return string(data), err
+}
+
+func (client *Client) SetKeysFromEncodeWallet(wallet_json string, password string) error {
+	if wallet_json == "" {
+		return errors.New("Wallet json is not empty.")
+	}
+	if password == "" {
+		return errors.New("Password is not empty.")
+	}
+
+	var wl *Wallet
+	err := json.Unmarshal([]byte(wallet_json), &wl)
+	if wl == nil || err != nil {
+		return errors.New("Can not decode json wallet data.")
+	}
+
+	new_password := password + wl.Salt
+	pw := sha512.Sum512([]byte(new_password))
+	decrypted, err := Decrypt(pw[:], wl.CipherKeys)
+	if err != nil {
+		return err
+	}
+	var pk PlainKeys
+	err = json.Unmarshal([]byte(decrypted), &pk)
+	if err != nil {
+		return err
+	}
+	//Set keys
+	for k := range pk.Keys {
+		client.SetKeys(&Keys{OKey: []string{pk.Keys[k]}})
+	}
+
+	return nil
+}
