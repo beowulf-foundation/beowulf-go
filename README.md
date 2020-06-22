@@ -1,6 +1,6 @@
 # Official Go BEOWULF Library
 
-beowulf-go is the official Beowulf library for Go.  
+`beowulf-go` is the official Beowulf library for GoL.  
 
 ## Main Functions Supported
 1. CHAIN
