@@ -21,13 +21,13 @@ go import "github.com/beowulf-foundation/beowulf-go"
 
 ## Configuration
 #### Init
+
 ```go
-//// MainNet: https://bw.beowulfchain.com/rpc
-//// TestNet: https://testnet-bw.beowulfchain.com/rpc
-url := "http://localhost:8376" // Replace this url with your node url
-cls, _ := client.NewClient(url)
+// MainNet: https://bw.beowulfchain.com/rpc
+// TestNet: https://testnet-bw.beowulfchain.com/rpc
+cls, _ := client.NewClient('http://localhost:8376/rpc')
 defer cls.Close()
-//// SetKeys
+// SetKeys
 key := "5Jxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" // Replace your private key
 cls.SetKeys(&client.Keys{OKey: []string{key}})
 ```
