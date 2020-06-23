@@ -1,13 +1,13 @@
 package client
 
 import (
-	"net/url"
 	"beowulf-go/api"
 	"beowulf-go/config"
 	"beowulf-go/transports"
 	"beowulf-go/transports/http"
 	"beowulf-go/transports/websocket"
 	"github.com/pkg/errors"
+	"net/url"
 )
 
 var (
@@ -32,7 +32,7 @@ type Client struct {
 
 // NewClient creates a new RPC client that use the given CallCloser internally.
 // Initialize only server present API. Absent API initialized as nil value.
-func NewClient(s string) (*Client, error) {
+func NewClient(s string, isTestNet bool) (*Client, error) {
 	// Parse URL
 	u, err := url.Parse(s)
 	if err != nil {
@@ -61,8 +61,11 @@ func NewClient(s string) (*Client, error) {
 
 	client.API = api.NewAPI(client.cc)
 
-	client.chainID = config.CHAIN_ID
-
+	if isTestNet {
+		client.chainID = config.CHAIN_ID_TESTNET
+	} else {
+		client.chainID = config.CHAIN_ID_MAINNET
+	}
 	return client, nil
 }
 
