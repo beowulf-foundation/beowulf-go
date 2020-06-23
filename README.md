@@ -25,7 +25,8 @@ go import "github.com/beowulf-foundation/beowulf-go"
 ```go
 // MainNet: https://bw.beowulfchain.com/rpc
 // TestNet: https://testnet-bw.beowulfchain.com/rpc
-cls, _ := client.NewClient("http://localhost:8376/rpc") # Replace this url with your node url
+url := "http://localhost:8376/rpc"  #Replace this url with your node url
+cls, _ := client.NewClient(url, true)  #Set "true" if using testnet, "false" if using mainnet
 defer cls.Close()
 // SetKeys
 key := "5Jxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" // Replace your private key
