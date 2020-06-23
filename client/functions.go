@@ -79,7 +79,29 @@ func (client *Client) GetBalance(account, tokenName string, decimals uint8) (*st
 }
 
 //Transfer of funds to any user.
-func (client *Client) Transfer(fromName, toName, memo, amount, fee string, extension string) (*OperResp, error) {
+func (client *Client) Transfer(fromName, toName, memo, amount, fee string) (*OperResp, error) {
+	validate := ValidateFee(fee, config.MIN_TRANSACTION_FEE)
+	if validate == false {
+		return nil, errors.New("Fee is not valid")
+	}
+	validate = ValidateAmount(amount)
+	if validate == false {
+		return nil, errors.New("Amount is not valid")
+	}
+	var trx []types.Operation
+	tx := &types.TransferOperation{
+		From:   fromName,
+		To:     toName,
+		Amount: amount,
+		Fee:    fee,
+		Memo:   memo,
+	}
+	trx = append(trx, tx)
+	resp, err := client.SendTrx(trx, "")
+	return &OperResp{NameOper: "Transfer", Bresp: resp}, err
+}
+
+func (client *Client) TransferEx(fromName, toName, memo, amount, fee string, extension string) (*OperResp, error) {
 	validate := ValidateFee(fee, config.MIN_TRANSACTION_FEE)
 	if validate == false {
 		return nil, errors.New("Fee is not valid")
@@ -107,12 +129,6 @@ func (client *Client) MultiOp(trx []types.Operation, extension string) (*OperRes
 }
 
 func (client *Client) CreateToken(creator, controlAcc, tokenName string, decimals uint8, maxSupply uint64) (*OperResp, error) {
-	//config, err := client.API.GetConfig()
-	//if err != nil{
-	//	return nil, err
-	//}
-	//feeAmt := config.TokenCreationFee
-
 	var trx []types.Operation
 	tx := &types.SmtCreateOperation{
 		ControlAccount: controlAcc,
@@ -241,7 +257,7 @@ func (client *Client) SupernodeUpdate(owner, blocksigningkey, fee string) (*Oper
 //AccountCreate creating a user in systems
 func (client *Client) GenKeys(newAccountName string) (*WalletData, error) {
 	role := "owner"
-	password := RandStringBytes(16)
+	password := RandStringBytes(128)
 	priv := CreatePrivateKey(newAccountName, role, password)
 	pub := CreatePublicKey(config.ADDRESS_PREFIX, priv)
 
@@ -313,7 +329,6 @@ func (client *Client) AccountUpdate(account, publicKey, fee string) (*OperResp, 
 }
 
 func (client *Client) AccountCreateWS(creator, newAccountName, password, fee string) (*OperResp, error) {
-
 	err := ValidateNameAccount(newAccountName)
 	if err != nil {
 		return nil, err
@@ -366,7 +381,6 @@ func (client *Client) CreateMultiSigAccount(creator, newAccountName, fee string,
 		return nil, err
 	}
 	validate := ValidateFee(fee, config.MIN_ACCOUNT_CREATION_FEE)
-
 	if validate == false {
 		return nil, errors.New("Fee is not valid")
 	}
@@ -415,14 +429,12 @@ func (client *Client) CreateMultiSigAccount(creator, newAccountName, fee string,
 
 //AccountUpdate update owner keys for account
 //TODO: every key has different weight on account
-
 func (client *Client) UpdateMultiSigAccount(account, fee string, accountOwners []string, keyOwners []string, threshold uint32) (*OperResp, error) {
 	err := ValidateNameAccount(account)
 	if err != nil {
 		return nil, err
 	}
 	validate := ValidateFee(fee, config.MIN_TRANSACTION_FEE)
-
 	if validate == false {
 		return nil, errors.New("Fee is not valid")
 	}
@@ -578,7 +590,6 @@ func (client *Client) SendTrxMultiSig(tx *transactions.SignedTransaction) (*BRes
 	var bresp BResp
 	var err error
 	// Sending a transaction
-	//var errb error
 	if client.AsyncProtocol {
 		var resp *api.AsyncBroadcastResponse
 		resp, err = client.API.BroadcastTransaction(tx.Transaction)
