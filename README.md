@@ -4,22 +4,38 @@
 
 ## Main Functions Supported
 1. CHAIN
-- get_block
-- get_transaction
-- get_balance
+- Get block
+- Get transaction
+- Get account
+- Get token
+- Get balance
 2. TRANSACTION
-- broadcast_transaction
-- create transaction transfer
-- create account
-- create token
+- Transfer
+- Create wallet
+- Create token
+- Vote for supernode
+- Unvote supernode
+- Transfer to vesting
+- Withdraw
 
 ## Installation
 ```go
 go get -u github.com/beowulf-foundation/beowulf-go
-go import "github.com/beowulf-foundation/beowulf-go"
 ```
 
 ## Configuration
+```go
+import (
+	"github.com/beowulf-foundation/beowulf-go/api"
+    "github.com/beowulf-foundation/beowulf-go/client"
+    "github.com/beowulf-foundation/beowulf-go/config"
+	"github.com/beowulf-foundation/beowulf-go/encoding"
+    "github.com/beowulf-foundation/beowulf-go/transactions"
+    "github.com/beowulf-foundation/beowulf-go/transports"
+    "github.com/beowulf-foundation/beowulf-go/types"
+    "github.com/beowulf-foundation/beowulf-go/util"
+)
+```
 #### Init
 
 ```go
@@ -34,7 +50,18 @@ cls.SetKeys(&client.Keys{OKey: []string{key}})
 ```
 
 ## Example Usage
-
+```go
+import (
+	"github.com/beowulf-foundation/beowulf-go/api"
+    "github.com/beowulf-foundation/beowulf-go/client"
+    "github.com/beowulf-foundation/beowulf-go/config"
+	"github.com/beowulf-foundation/beowulf-go/encoding"
+    "github.com/beowulf-foundation/beowulf-go/transactions"
+    "github.com/beowulf-foundation/beowulf-go/transports"
+    "github.com/beowulf-foundation/beowulf-go/types"
+    "github.com/beowulf-foundation/beowulf-go/util"
+)
+```
 ##### Get block
 ```go
 lastBlock := props.LastIrreversibleBlockNum
@@ -85,6 +112,29 @@ if len(exlist) > 0 {
 }
 ```
 
+##### Get account
+```go
+account := "alice"          #Replace with your account name
+result,_ := cls.GetAccount(account)
+fmt.Println(result) 
+```
+
+##### Get token
+```go
+token := "KNOW"             #Replace with your token name
+result,_ := cls.GetToken(token)
+fmt.Println(result) 
+```
+
+##### Get balance
+```go
+account := "alice"          #Replace with your account name
+token := "KNOW"             #Replace with your token name
+decimal := 5                #Replace with your token decimal
+result, _ := cls.API.GetBalance(account, token, decimal)
+fmt.Println(result)
+```
+
 ##### Transfer native coin
 ###### Transfer BWF
 ```go
@@ -133,4 +183,51 @@ if rs != nil {
 // print keys
 fmt.Println(cls.GetPrivateKey())
 fmt.Println(cls.GetPublicKey())
+```
+
+##### Create token
+
+```go
+creator := "initminer"      #Account who has authority of creating token
+owner := "alice"            #Account who is owner of token
+token := "KNOW"             #Token name of token being created
+decimal := 5                #Decimal of token being created
+maxSupply := 1000000        #Maximum token will be supplied
+cls.CreateToken(creator, owner, token, decimal, maxSupply)
+```
+
+##### Vote
+
+```go
+account := "alice"          #User account go to vote
+supernode := "initminer"    #Supernode account is voted 
+fee := "0.01000 W"          #Fee to vote 
+votes := 100                #Number of vote 
+cls.AccountSupernodeVote(account, supernode, fee, votes)
+```
+
+##### Unvote 
+
+```go
+account := "alice"          #User account go to unvote
+supernode := "initminer"    #Supernode account is unvoted  
+fee := "0.01000 W"          #Fee to unvote
+cls.AccountSupernodeUnvote(account, supernode, fee)
+```
+
+##### Transfer to vesting
+```go
+from := "alice"             #Account who wants to transfer
+to := "bob"                 #Receiver
+amount := "1000.00000 BWF"  #Amount to transfer
+fee := "0.01000 W"          #Fee to transfer
+cls.TransferToVesting(from, to, amount, fee)
+```
+
+##### Withdraw
+```go
+account := "alice"          #Account wanting to withdraw vest to BWF
+amount := "100.00000 M"     #Number of vest to withdraw
+fee := "0.01000 W"          #Fee to withdraw
+cls.WithdrawVesting(account, amount, fee)
 ```

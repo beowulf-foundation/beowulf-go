@@ -146,7 +146,7 @@ func (client *Client) CreateToken(creator, controlAcc, tokenName string, decimal
 }
 
 //AccountSupernodeVote of voting for the delegate.
-func (client *Client) AccountSupernodeVote(username, witnessName, fee string, votes int64) (*OperResp, error) {
+func (client *Client) AccountSupernodeVote(username, supernodeName, fee string, votes int64) (*OperResp, error) {
 	validate := ValidateFee(fee, config.MIN_TRANSACTION_FEE)
 	if validate == false {
 		return nil, errors.New("Fee is not valid")
@@ -157,7 +157,7 @@ func (client *Client) AccountSupernodeVote(username, witnessName, fee string, vo
 	var trx []types.Operation
 	tx := &types.AccountSupernodeVoteOperation{
 		Account:   username,
-		Supernode: witnessName,
+		Supernode: supernodeName,
 		Approve:   true,
 		Votes:     votes,
 		Fee:       fee,
@@ -169,7 +169,7 @@ func (client *Client) AccountSupernodeVote(username, witnessName, fee string, vo
 }
 
 //Unvote
-func (client *Client) AccountSupernodeUnvote(username, witnessName, fee string) (*OperResp, error) {
+func (client *Client) AccountSupernodeUnvote(username, supernodeName, fee string) (*OperResp, error) {
 	validate := ValidateFee(fee, config.MIN_TRANSACTION_FEE)
 
 	if validate == false {
@@ -178,7 +178,7 @@ func (client *Client) AccountSupernodeUnvote(username, witnessName, fee string) 
 	var trx []types.Operation
 	tx := &types.AccountSupernodeVoteOperation{
 		Account:   username,
-		Supernode: witnessName,
+		Supernode: supernodeName,
 		Approve:   false,
 		Votes:     0,
 		Fee:       fee,
