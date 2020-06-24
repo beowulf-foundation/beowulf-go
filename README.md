@@ -27,10 +27,10 @@ go get -u github.com/beowulf-foundation/beowulf-go
 ## Configuration
 ```go
 import (
-	"github.com/beowulf-foundation/beowulf-go/api"
+    "github.com/beowulf-foundation/beowulf-go/api"
     "github.com/beowulf-foundation/beowulf-go/client"
     "github.com/beowulf-foundation/beowulf-go/config"
-	"github.com/beowulf-foundation/beowulf-go/encoding"
+    "github.com/beowulf-foundation/beowulf-go/encoding"
     "github.com/beowulf-foundation/beowulf-go/transactions"
     "github.com/beowulf-foundation/beowulf-go/transports"
     "github.com/beowulf-foundation/beowulf-go/types"
@@ -53,10 +53,10 @@ cls.SetKeys(&client.Keys{OKey: []string{key}})
 ## Example Usage
 ```go
 import (
-	"github.com/beowulf-foundation/beowulf-go/api"
+    "github.com/beowulf-foundation/beowulf-go/api"
     "github.com/beowulf-foundation/beowulf-go/client"
     "github.com/beowulf-foundation/beowulf-go/config"
-	"github.com/beowulf-foundation/beowulf-go/encoding"
+    "github.com/beowulf-foundation/beowulf-go/encoding"
     "github.com/beowulf-foundation/beowulf-go/transactions"
     "github.com/beowulf-foundation/beowulf-go/transports"
     "github.com/beowulf-foundation/beowulf-go/types"
