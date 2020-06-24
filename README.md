@@ -17,6 +17,7 @@
 - Unvote supernode
 - Transfer to vesting
 - Withdraw
+- Register to be a supernode
 
 ## Installation
 ```go
@@ -230,4 +231,12 @@ account := "alice"          #Account wanting to withdraw vest to BWF
 amount := "100.00000 M"     #Number of vest to withdraw
 fee := "0.01000 W"          #Fee to withdraw
 cls.WithdrawVesting(account, amount, fee)
+```
+
+##### Register to be a supernode
+```go
+account := "alice"                                                      #Account wanting to be a supernode, minimum vest must be "3000000 M"
+publicKey := "BEO8XdQVbHtLxRysKPuwwkFyotpC5J4y54hYXpnmipYgD3nEnegYE"    #Public key of account
+fee := "0.01000 W"                                                      #Fee to be a supernode
+cls.SupernodeUpdate(account, publicKey, fee)
 ```
