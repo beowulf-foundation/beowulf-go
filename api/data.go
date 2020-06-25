@@ -101,8 +101,8 @@ type DynamicGlobalProperties struct {
 	TotalVestingFund         *types.Asset `json:"total_vesting_fund_beowulf"`
 	TotalVestingShares       *types.Asset `json:"total_vesting_shares"`
 	CurrentAslot             uint64       `json:"current_aslot"`
-	RecentSlotsFilled        *types.Int   `json:"recent_slots_filled"`
-	ParticipationCount       uint8        `json:"participation_count"`
+	//RecentSlotsFilled        *types.Int   `json:"recent_slots_filled"`
+	//ParticipationCount       uint8        `json:"participation_count"`
 	LastIrreversibleBlockNum uint32       `json:"last_irreversible_block_num"`
 }
 
