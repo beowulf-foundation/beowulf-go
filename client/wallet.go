@@ -2,13 +2,13 @@ package client
 
 import (
 	"beowulf-go/config"
+	"crypto/rand"
 	"crypto/sha512"
 	"encoding/json"
 	"github.com/pkg/errors"
 	"io/ioutil"
-	"math/rand"
+	"math/big"
 	"os"
-	"time"
 )
 
 var (
@@ -21,13 +21,26 @@ var (
 
 const letterBytes = "0123456789+abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
-func RandStringBytes(n int) string {
-	rand.Seed(time.Now().UnixNano())
-	b := make([]byte, n)
-	for i := range b {
-		b[i] = letterBytes[rand.Intn(len(letterBytes))]
+//func RandStringBytes(n int) string {
+//	rand.Seed(time.Now().UnixNano())
+//	b := make([]byte, n)
+//	for i := range b {
+//		b[i] = letterBytes[rand.Intn(len(letterBytes))]
+//	}
+//	return string(b)
+//}
+
+func RandStringBytes(n int) (string, error) {
+	ret := make([]byte, n)
+	for i := 0; i < n; i++ {
+		num, err := rand.Int(rand.Reader, big.NewInt(int64(len(letterBytes))))
+		if err != nil {
+			return "", err
+		}
+		ret = append(ret, letterBytes[num.Uint64()])
 	}
-	return string(b)
+
+	return string(ret), nil
 }
 
 func allZero(s []byte) bool {
@@ -116,7 +129,12 @@ func (client *Client) SetPassword(password string) error {
 			return errors.New("The wallet must be unlocked before the password can be set")
 		}
 	}
-	salt := RandStringBytes(16)
+	salt, err := RandStringBytes(16)
+	if err != nil {
+		// Serve an appropriately vague error to the
+		// user, but log the details internally.
+		panic(err)
+	}
 	new_password := password + salt
 	c := sha512.Sum512([]byte(new_password))
 	Checksum_ = c[:]
@@ -269,7 +287,12 @@ func SaveWalletFile(wallet_path string, wallet_filename string, password string,
 	// if exceptions are thrown in serialization
 	keys := make(map[string]string)
 	keys[wallet_data.PublicKey] = wallet_data.PrivateKey
-	salt := RandStringBytes(16)
+	salt, err := RandStringBytes(16)
+	if err != nil {
+		// Serve an appropriately vague error to the
+		// user, but log the details internally.
+		panic(err)
+	}
 	new_password := password + salt
 	checksum := sha512.Sum512([]byte(new_password))
 
@@ -319,7 +342,12 @@ func EncodeWallet(password string, wallet_data *WalletData) (string, error) {
 	// if exceptions are thrown in serialization
 	keys := make(map[string]string)
 	keys[wallet_data.PublicKey] = wallet_data.PrivateKey
-	salt := RandStringBytes(16)
+	salt, err := RandStringBytes(16)
+	if err != nil {
+		// Serve an appropriately vague error to the
+		// user, but log the details internally.
+		panic(err)
+	}
 	new_password := password + salt
 	checksum := sha512.Sum512([]byte(new_password))
 
