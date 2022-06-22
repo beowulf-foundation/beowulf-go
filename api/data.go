@@ -98,12 +98,12 @@ type DynamicGlobalProperties struct {
 	CurrentSupply    *types.Asset `json:"current_supply"`
 	CurrentWDSupply  *types.Asset `json:"current_wd_supply"`
 
-	TotalVestingFund         *types.Asset `json:"total_vesting_fund_beowulf"`
-	TotalVestingShares       *types.Asset `json:"total_vesting_shares"`
-	CurrentAslot             uint64       `json:"current_aslot"`
+	TotalVestingFund   *types.Asset `json:"total_vesting_fund_beowulf"`
+	TotalVestingShares *types.Asset `json:"total_vesting_shares"`
+	CurrentAslot       uint64       `json:"current_aslot"`
 	//RecentSlotsFilled        *types.Int   `json:"recent_slots_filled"`
 	//ParticipationCount       uint8        `json:"participation_count"`
-	LastIrreversibleBlockNum uint32       `json:"last_irreversible_block_num"`
+	LastIrreversibleBlockNum uint32 `json:"last_irreversible_block_num"`
 }
 
 //BlockHeader structure for the GetBlockHeader and SetBlockAppliedCallback functions
@@ -232,3 +232,31 @@ type TransactionResponse struct {
 	Status         string            `json:"status"`
 }
 
+type NFT struct {
+	Id                        *types.UInt16 `json:"_id"`
+	Issuer                    string        `json:"issuer"`
+	Symbol                    string        `json:"symbol"`
+	Name                      string        `json:"name"`
+	Metadata                  string        `json:"metadata"`
+	MaxSupply                 *types.Int64  `json:"maxSupply"`
+	Supply                    *types.Int64  `json:"supply"`
+	AuthorizedIssuingAccounts []string      `json:"authorizedIssuingAccounts"`
+}
+
+type NFTList []NFT
+
+type Params struct {
+	Contract string      `json:"contract"`
+	Table    string      `json:"table"`
+	Query    interface{} `json:"query"`
+	Limit    uint32      `json:"limit"`
+	Offset   uint32      `json:"offset"`
+}
+
+type NFTInstance struct {
+	Id         *types.UInt16 `json:"_id"`
+	Account    string        `json:"account"`
+	Properties interface{}   `json:"properties"`
+}
+
+type NFTInstanceList []NFTInstance

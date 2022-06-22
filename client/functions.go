@@ -6,6 +6,7 @@ import (
 	"beowulf-go/transactions"
 	"beowulf-go/types"
 	"errors"
+	"fmt"
 	"sort"
 	"strconv"
 	"strings"
@@ -76,6 +77,45 @@ func (client *Client) GetToken(name string) (*api.TokenInfo, error) {
 
 func (client *Client) GetBalance(account, tokenName string, decimals uint8) (*string, error) {
 	return client.API.GetBalance(account, tokenName, decimals)
+}
+
+func (client *Client) GetNFTs(symbol string) (*api.NFTList, error) {
+	return client.API.GetNFTs(symbol, 100, 0)
+}
+
+func (client *Client) GetNFTBalance(account, symbol string) (*api.NFTInstanceList, error) {
+	return client.API.GetNFTBalance(account, symbol, 100, 0)
+}
+
+func (client *Client) GetNFTInstances(symbol string) (*api.NFTInstanceList, error) {
+	return client.API.GetNFTInstances(symbol, 100, 0)
+}
+
+func (client *Client) GetNFTBalanceOfAccount(account string) (*api.NFTInstanceList, error) {
+	return client.API.GetNFTBalanceOfAccount(account, 100, 0)
+}
+
+//Create NFT
+func (client *Client) CreateNFT(fromName, scid, name, symbol, maxSupply, fee string, authorizedIssuingAccounts []string) (*OperResp, error) {
+	validate := ValidateFee(fee, config.MIN_TRANSACTION_FEE)
+	if validate == false {
+		return nil, errors.New("Fee is not valid")
+	}
+	var owners []string
+	owners = append(owners, fromName)
+
+	var scoperation string
+	scoperation = fmt.Sprintf("{\"contractName\":\"nft\",\"contractAction\":\"create\",\"contractPayload\":\"name\":%s,\"symbol\":%s,\"maxSupply\":%s,\"authorizedIssuingAccounts\":%v}}", name, symbol, maxSupply, authorizedIssuingAccounts)
+	var trx []types.Operation
+	tx := &types.SmartContractOperation{
+		RequiredOwners: owners,
+		Scid:           scid,
+		ScOperation:    scoperation,
+		Fee:            fee,
+	}
+	trx = append(trx, tx)
+	resp, err := client.SendTrx(trx, "")
+	return &OperResp{NameOper: "SmartContract", Bresp: resp}, err
 }
 
 //Transfer of funds to any user.

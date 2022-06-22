@@ -9,19 +9,20 @@ func (kind OpType) Code() uint16 {
 }
 
 const (
-	TypeTransfer                    OpType = "transfer"
-	TypeTransferToVesting           OpType = "transfer_to_vesting"
-	TypeWithdrawVesting             OpType = "withdraw_vesting"
-	TypeAccountCreate               OpType = "account_create"
-	TypeAccountUpdate               OpType = "account_update"
-	TypeSupernodeUpdate             OpType = "supernode_update"
-	TypeAccountSupernodeVote        OpType = "account_supernode_vote"
-	TypeSmtCreate					OpType = "smt_create"
-	TypeFillVestingWithdraw         OpType = "fill_vesting_withdraw"      //Virtual Operation
-	TypeShutdownSupernode           OpType = "shutdown_supernode"         //Virtual Operation
-	TypeHardfork                    OpType = "hardfork"                   //Virtual Operation
-	TypeProducerReward    	        OpType = "producer_reward"  		  //Virtual Operation
-	TypeClearNullAccountBalance     OpType = "clear_null_account_balance" //Virtual Operation
+	TypeTransfer                OpType = "transfer"
+	TypeTransferToVesting       OpType = "transfer_to_vesting"
+	TypeWithdrawVesting         OpType = "withdraw_vesting"
+	TypeAccountCreate           OpType = "account_create"
+	TypeAccountUpdate           OpType = "account_update"
+	TypeSupernodeUpdate         OpType = "supernode_update"
+	TypeAccountSupernodeVote    OpType = "account_supernode_vote"
+	TypeSmtCreate               OpType = "smt_create"
+	TypeSmartContract           OpType = "smart_contract"
+	TypeFillVestingWithdraw     OpType = "fill_vesting_withdraw"      //Virtual Operation
+	TypeShutdownSupernode       OpType = "shutdown_supernode"         //Virtual Operation
+	TypeHardfork                OpType = "hardfork"                   //Virtual Operation
+	TypeProducerReward          OpType = "producer_reward"            //Virtual Operation
+	TypeClearNullAccountBalance OpType = "clear_null_account_balance" //Virtual Operation
 )
 
 var opTypes = [...]OpType{
@@ -33,10 +34,11 @@ var opTypes = [...]OpType{
 	TypeSupernodeUpdate,
 	TypeAccountSupernodeVote,
 	TypeSmtCreate,
+	TypeSmartContract,
 	TypeFillVestingWithdraw,     //Virtual Operation
 	TypeShutdownSupernode,       //Virtual Operation
 	TypeHardfork,                //Virtual Operation
-	TypeProducerReward,     	 //Virtual Operation
+	TypeProducerReward,          //Virtual Operation
 	TypeClearNullAccountBalance, //Virtual Operation
 }
 

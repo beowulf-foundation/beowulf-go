@@ -1,10 +1,10 @@
 package api
 
 import (
-	"beowulf-go/types"
-	"encoding/json"
 	"beowulf-go/transports"
+	"beowulf-go/types"
 	_ "beowulf-go/types"
+	"encoding/json"
 )
 
 func (api *API) GetVersion() (*Version, error) {
@@ -208,5 +208,74 @@ func (api *API) GetBalance(account, tokenName string, decimals uint8) (*string, 
 func (api *API) GetPendingTransactionCount() (*uint64, error) {
 	var resp uint64
 	err := api.call("condenser_api", "get_pending_transaction_count", transports.EmptyParams, &resp)
+	return &resp, err
+}
+
+func (api *API) GetNFTs(symbol string, limit, offset uint32) (*NFTList, error) {
+	var resp NFTList
+	var params Params
+	params.Contract = "nft"
+	params.Table = "nfts"
+	obj := map[string]interface{}{}
+	obj["symbol"] = symbol
+	params.Query = obj
+	params.Limit = limit
+	params.Offset = offset
+	err := api.call("", "find", params, &resp)
+	return &resp, err
+}
+
+func (api *API) GetNFTBalance(account string, symbol string, limit, offset uint32) (*NFTInstanceList, error) {
+	var resp NFTInstanceList
+	var params Params
+	params.Contract = "nft"
+	params.Table = symbol + "instances"
+	obj := map[string]interface{}{}
+	obj["account"] = account
+	params.Query = obj
+	params.Limit = limit
+	params.Offset = offset
+	err := api.call("", "find", params, &resp)
+	return &resp, err
+}
+
+func (api *API) GetNFTInstances(symbol string, limit, offset uint32) (*NFTInstanceList, error) {
+	var resp NFTInstanceList
+	var params Params
+	params.Contract = "nft"
+	params.Table = symbol + "instances"
+	obj := map[string]interface{}{}
+	params.Query = obj
+	params.Limit = limit
+	params.Offset = offset
+	err := api.call("", "find", params, &resp)
+	return &resp, err
+}
+
+func (api *API) GetNFTBalanceOfAccount(account string, limit, offset uint32) (*NFTInstanceList, error) {
+	var resp NFTInstanceList
+	var res NFTList
+	var params Params
+	params.Contract = "nft"
+	params.Table = "nfts"
+	obj := map[string]interface{}{}
+	params.Query = obj
+	err := api.call("", "find", params, &res)
+	for _, element := range res {
+		symbol := element.Symbol
+		var instance NFTInstanceList
+		var params Params
+		params.Contract = "nft"
+		params.Table = symbol + "instances"
+		obj := map[string]interface{}{}
+		obj["account"] = account
+		params.Query = obj
+		params.Limit = limit
+		params.Offset = offset
+		err = api.call("", "find", params, &instance)
+		if err == nil && len(instance) > 0 {
+			resp = append(resp, instance...)
+		}
+	}
 	return &resp, err
 }

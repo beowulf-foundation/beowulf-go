@@ -12,19 +12,20 @@ import (
 // dataObjects keeps mapping operation type -> operation data object.
 // This is used later on to unmarshal operation data based on the operation type.
 var dataObjects = map[OpType]Operation{
-	TypeTransfer:                    &TransferOperation{},
-	TypeTransferToVesting:           &TransferToVestingOperation{},
-	TypeWithdrawVesting:             &WithdrawVestingOperation{},
-	TypeAccountCreate:               &AccountCreateOperation{},
-	TypeAccountUpdate:               &AccountUpdateOperation{},
-	TypeSupernodeUpdate:             &SupernodeUpdateOperation{},
-	TypeAccountSupernodeVote:        &AccountSupernodeVoteOperation{},
-	TypeSmtCreate:					 &SmtCreateOperation{},
-	TypeFillVestingWithdraw:         &FillVestingWithdrawOperation{},     //Virtual Operation
-	TypeShutdownSupernode:           &ShutdownSupernodeOperation{},         //Virtual Operation
-	TypeHardfork:                    &HardforkOperation{},                //Virtual Operation
-	TypeProducerReward:         	 &ProducerRewardOperation{},     	  //Virtual Operation
-	TypeClearNullAccountBalance:     &ClearNullAccountBalanceOperation{}, //Virtual Operation
+	TypeTransfer:                &TransferOperation{},
+	TypeTransferToVesting:       &TransferToVestingOperation{},
+	TypeWithdrawVesting:         &WithdrawVestingOperation{},
+	TypeAccountCreate:           &AccountCreateOperation{},
+	TypeAccountUpdate:           &AccountUpdateOperation{},
+	TypeSupernodeUpdate:         &SupernodeUpdateOperation{},
+	TypeAccountSupernodeVote:    &AccountSupernodeVoteOperation{},
+	TypeSmtCreate:               &SmtCreateOperation{},
+	TypeSmartContract:           &SmartContractOperation{},
+	TypeFillVestingWithdraw:     &FillVestingWithdrawOperation{},     //Virtual Operation
+	TypeShutdownSupernode:       &ShutdownSupernodeOperation{},       //Virtual Operation
+	TypeHardfork:                &HardforkOperation{},                //Virtual Operation
+	TypeProducerReward:          &ProducerRewardOperation{},          //Virtual Operation
+	TypeClearNullAccountBalance: &ClearNullAccountBalanceOperation{}, //Virtual Operation
 }
 
 // Operation represents an operation stored in a transaction.
