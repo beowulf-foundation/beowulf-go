@@ -5,8 +5,7 @@ package transactions
 
 import (
 	"beowulf-go/config"
-	"fmt"
-
+	
 	// Stdlib
 	"bytes"
 	"crypto/sha256"
@@ -90,11 +89,11 @@ func (tx *SignedTransaction) Sign(privKeys [][]byte, chain string) (string, erro
 	if err != nil {
 		return "", err
 	}
-	fmt.Println("Transaction:")
-	fmt.Println(tx)
-	fmt.Println("Hex of tx:")
-	tmp := hex.EncodeToString(txRaw)
-	fmt.Println(tmp)
+// 	fmt.Println("Transaction:")
+// 	fmt.Println(tx)
+// 	fmt.Println("Hex of tx:")
+// 	tmp := hex.EncodeToString(txRaw)
+// 	fmt.Println(tmp)
 	hashSha256 := sha256.Sum256(txRaw)
 	var txId = make([]byte, 20)
 	copy(txId, hashSha256[:20])
