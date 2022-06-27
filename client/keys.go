@@ -32,6 +32,7 @@ func init() {
 	OpTypeKey["supernode_update"] = []string{"owner"}
 	OpTypeKey["account_supernode_vote"] = []string{"owner"}
 	OpTypeKey["smt_create"] = []string{"owner"}
+	OpTypeKey["smart_contract"] = []string{"owner"}
 }
 
 func HasElem(s interface{}, elem interface{}) bool {
@@ -81,7 +82,8 @@ func (client *Client) SigningKeys(trx types.Operation) ([][]byte, error) {
 		return nil, errors.New("Client Keys not initialized. Use SetKeys method")
 	}
 
-	opKeys := OpTypeKey[trx.Type()]
+	t := trx.Type()
+	opKeys := OpTypeKey[t]
 	for _, val := range opKeys {
 		switch val {
 		case "owner":

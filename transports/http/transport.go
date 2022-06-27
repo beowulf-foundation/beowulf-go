@@ -2,16 +2,16 @@ package http
 
 import (
 	"beowulf-go/config"
+	"beowulf-go/types"
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/pkg/errors"
 	"io/ioutil"
 	"math"
 	"net/http"
 	"sync"
 	"time"
-	"github.com/pkg/errors"
-	"beowulf-go/types"
 )
 
 type Transport struct {
@@ -33,7 +33,7 @@ func NewTransport(url string) (*Transport, error) {
 	}, nil
 }
 
-func (caller *Transport) Call(method string, args []interface{}, reply interface{}) error {
+func (caller *Transport) Call(method string, args []interface{}, reply interface{}, scid string) error {
 	caller.reqMutex.Lock()
 	defer caller.reqMutex.Unlock()
 
@@ -42,12 +42,22 @@ func (caller *Transport) Call(method string, args []interface{}, reply interface
 		caller.requestID = 0
 	}
 	caller.requestID++
-
-	request := types.RPCRequest{
-		Method: method,
-		JSON:   "2.0",
-		ID:     caller.requestID,
-		Params: args,
+	var request = types.RPCRequest{}
+	if len(scid) > 0 {
+		methodStr := fmt.Sprintf("%v", args[0])
+		request = types.RPCRequest{
+			Method: methodStr,
+			JSON:   "2.0",
+			ID:     caller.requestID,
+			Params: args[1],
+		}
+	} else {
+		request = types.RPCRequest{
+			Method: method,
+			JSON:   "2.0",
+			ID:     caller.requestID,
+			Params: args,
+		}
 	}
 
 	reqBody, err := json.Marshal(request)
@@ -55,7 +65,17 @@ func (caller *Transport) Call(method string, args []interface{}, reply interface
 		return err
 	}
 
-	resp, err := caller.client.Post(caller.Url, "application/json", bytes.NewBuffer(reqBody))
+	//resp, err := caller.client.Post(caller.Url, "application/json", bytes.NewBuffer(reqBody))
+	req, err := http.NewRequest("POST", caller.Url, bytes.NewBuffer(reqBody))
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	if len(scid) > 0 {
+		req.Header.Set("scid", scid)
+	}
+	resp, err := caller.client.Do(req)
+
 	if err != nil {
 		return err
 	}

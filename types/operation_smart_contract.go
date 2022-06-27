@@ -26,11 +26,16 @@ func (op *SmartContractOperation) Data() interface{} {
 func (op *SmartContractOperation) MarshalTransaction(encoder *transaction.Encoder) error {
 	enc := transaction.NewRollingEncoder(encoder)
 	enc.EncodeUVarint(uint64(TypeSmartContract.Code()))
-	enc.Encode(op.RequiredOwners)
+	//enc.Encode(op.RequiredOwners)
+	// encode AccountAuths as map[string]uint16
+	enc.EncodeUVarint(uint64(len(op.RequiredOwners)))
+	for _, v := range op.RequiredOwners {
+		enc.EncodeString(v)
+	}
 	enc.Encode(op.Scid)
 	enc.Encode(op.ScOperation)
 	enc.EncodeMoney(op.Fee)
 	//enc.Encode(op.Extensions)
-	enc.EncodeUVarint(0)
+	//enc.EncodeUVarint(0)
 	return enc.Err()
 }

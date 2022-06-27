@@ -2,8 +2,8 @@ package types
 
 import (
 	"encoding/json"
-	"strings"
 	"github.com/pkg/errors"
+	"strings"
 )
 
 //StringSlice type from parameter JSON
@@ -29,4 +29,13 @@ func (ss *StringSlice) UnmarshalJSON(data []byte) error {
 		*ss = strings.Split(v, " ")
 	}
 	return nil
+}
+
+//MarshalJSON function for packing the StringInt64Map type in JSON.
+func (m StringSlice) MarshalJSON() ([]byte, error) {
+	xs := make([]string, 0, len(m))
+	for _, v := range m {
+		xs = append(xs, v)
+	}
+	return JSONMarshal(xs)
 }

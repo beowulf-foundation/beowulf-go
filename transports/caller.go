@@ -11,7 +11,7 @@ var (
 
 //Caller interface for sending a request to a network transport
 type Caller interface {
-	Call(method string, args []interface{}, reply interface{}) error
+	Call(method string, args []interface{}, reply interface{}, scid string) error
 	SetCallback(api string, method string, callback func(raw json.RawMessage)) error
 }
 

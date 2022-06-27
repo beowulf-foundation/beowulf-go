@@ -1,15 +1,15 @@
 package websocket
 
 import (
+	"beowulf-go/types"
 	"encoding/json"
 	"fmt"
+	"github.com/gorilla/websocket"
+	"github.com/pkg/errors"
 	"log"
 	"math"
 	"sync"
 	"time"
-	"github.com/gorilla/websocket"
-	"github.com/pkg/errors"
-	"beowulf-go/types"
 )
 
 var (
@@ -60,7 +60,7 @@ func NewTransport(url string) (*Transport, error) {
 	return client, nil
 }
 
-func (caller *Transport) Call(method string, args []interface{}, reply interface{}) error {
+func (caller *Transport) Call(method string, args []interface{}, reply interface{}, scid string) error {
 	caller.reqMutex.Lock()
 	defer caller.reqMutex.Unlock()
 
@@ -124,7 +124,7 @@ func (caller *Transport) SetCallback(api string, method string, notice func(args
 	caller.callbacks[caller.callbackID] = notice
 	caller.callbackMutex.Unlock()
 
-	return caller.Call("call", []interface{}{api, method, []interface{}{caller.callbackID}}, ans)
+	return caller.Call("call", []interface{}{api, method, []interface{}{caller.callbackID}}, ans, "")
 }
 
 func (caller *Transport) input() {

@@ -232,6 +232,19 @@ type TransactionResponse struct {
 	Status         string            `json:"status"`
 }
 
+type NFTTransaction struct {
+	RefBeowulfBlockNumber *types.UInt16 `json:"refBeowulfBlockNumber"`
+	TransactionId         string        `json:"transactionId"`
+	Sender                string        `json:"sender"`
+	Contract              string        `json:"contract"`
+	Action                string        `json:"action"`
+	Payload               string        `json:"payload"`
+	ExecutedCodeHash      string        `json:"executedCodeHash"`
+	Hash                  string        `json:"hash"`
+	DatabaseHash          string        `json:"databaseHash"`
+	Logs                  string        `json:"logs"`
+}
+
 type NFT struct {
 	Id                        *types.UInt16 `json:"_id"`
 	Issuer                    string        `json:"issuer"`
@@ -253,6 +266,14 @@ type Params struct {
 	Offset   uint32      `json:"offset"`
 }
 
+type BlockParams struct {
+	BlockNumber uint32 `json:"blockNumber"`
+}
+
+type TransactionParams struct {
+	Txid string `json:"txid"`
+}
+
 type NFTInstance struct {
 	Id         *types.UInt16 `json:"_id"`
 	Account    string        `json:"account"`
@@ -260,3 +281,24 @@ type NFTInstance struct {
 }
 
 type NFTInstanceList []NFTInstance
+
+type NFTBlock struct {
+	Id                    uint32            `json:"_id"`
+	BlockNumber           uint32            `json:"blockNumber"`
+	RefBeowulfBlockNumber uint16            `json:"refBeowulfBlockNumber"`
+	RefBeowulfBlockId     string            `json:"refBeowulfBlockId"`
+	PrevRefBeowulfBlockId string            `json:"prevRefBeowulfBlockId"`
+	PreviousHash          string            `json:"previousHash"`
+	PreviousDatabaseHash  string            `json:"previousDatabaseHash"`
+	Timestamp             *types.Time       `json:"timestamp"`
+	Transactions          []*NFTTransaction `json:"transactions"`
+	VirtualTransactions   []*NFTTransaction `json:"virtualTransactions"`
+	Hash                  string            `json:"hash"`
+	DatabaseHash          string            `json:"databaseHash"`
+	MerkleRoot            string            `json:"merkleRoot"`
+	Round                 interface{}       `json:"round"`
+	RoundHash             string            `json:"roundHash"`
+	Supernode             string            `json:"supernode"`
+	SigningKey            string            `json:"signingKey"`
+	RoundSignature        string            `json:"roundSignature"`
+}
