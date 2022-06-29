@@ -5,6 +5,7 @@ import (
 	"beowulf-go/config"
 	"beowulf-go/transactions"
 	"beowulf-go/types"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"sort"
@@ -116,8 +117,26 @@ func (client *Client) CreateNFT(fromName, scid, name, symbol, maxSupply, fee str
 	var owners []string
 	owners = append(owners, fromName)
 
+	accounts := ""
+	for i, item := range authorizedIssuingAccounts {
+		if i == 0 {
+			accounts += "[\"" + item + "\""
+			if i == len(authorizedIssuingAccounts)-1 {
+				accounts += "]"
+			}
+		} else if i == len(authorizedIssuingAccounts)-1 {
+			accounts += "," + "\"" + item + "\"]"
+		} else {
+			accounts += "," + "\"" + item + "\""
+		}
+	}
+
 	var scoperation string
-	scoperation = fmt.Sprintf("{\"contractName\":\"nft\",\"contractAction\":\"create\",\"contractPayload\":{\"name\":\"%s\",\"symbol\":\"%s\",\"maxSupply\":\"%s\",\"authorizedIssuingAccounts\":%v}}", name, symbol, maxSupply, authorizedIssuingAccounts)
+	if len(authorizedIssuingAccounts) > 0 {
+		scoperation = fmt.Sprintf("{\"contractName\":\"nft\",\"contractAction\":\"create\",\"contractPayload\":{\"name\":\"%s\",\"symbol\":\"%s\",\"maxSupply\":\"%s\",\"authorizedIssuingAccounts\":%s}}", name, symbol, maxSupply, accounts)
+	} else {
+		scoperation = fmt.Sprintf("{\"contractName\":\"nft\",\"contractAction\":\"create\",\"contractPayload\":{\"name\":\"%s\",\"symbol\":\"%s\",\"maxSupply\":\"%s\"}}", name, symbol, maxSupply)
+	}
 	//scoperation = fmt.Sprintf("{\"contractName\":\"nft\",\"contractAction\":\"create\",\"contractPayload\":{\"name\":\"%s\",\"symbol\":\"%s\",\"maxSupply\":\"%s\"}}", name, symbol, maxSupply)
 	var trx []types.Operation
 	tx := &types.SmartContractOperation{
@@ -131,51 +150,51 @@ func (client *Client) CreateNFT(fromName, scid, name, symbol, maxSupply, fee str
 	return &OperResp{NameOper: "SmartContract", Bresp: resp}, err
 }
 
-func (client *Client) UpdateUrl(fromName, scid, symbol, url, fee string) (*OperResp, error) {
-	validate := ValidateFee(fee, config.MIN_TRANSACTION_FEE)
-	if validate == false {
-		return nil, errors.New("Fee is not valid")
-	}
-	var owners []string
-	owners = append(owners, fromName)
+//func (client *Client) UpdateUrl(fromName, scid, symbol, url, fee string) (*OperResp, error) {
+//	validate := ValidateFee(fee, config.MIN_TRANSACTION_FEE)
+//	if validate == false {
+//		return nil, errors.New("Fee is not valid")
+//	}
+//	var owners []string
+//	owners = append(owners, fromName)
+//
+//	var scoperation string
+//	scoperation = fmt.Sprintf("{\"contractName\":\"nft\",\"contractAction\":\"updateMetadata\",\"contractPayload\":{\"symbol\":\"%s\",\"metadata\":{\"url\":\"%s\"}}}", symbol, url)
+//	var trx []types.Operation
+//	tx := &types.SmartContractOperation{
+//		RequiredOwners: owners,
+//		Scid:           scid,
+//		ScOperation:    scoperation,
+//		Fee:            fee,
+//	}
+//	trx = append(trx, tx)
+//	resp, err := client.SendTrx(trx, "")
+//	return &OperResp{NameOper: "SmartContract", Bresp: resp}, err
+//}
+//
+//func (client *Client) UpdateImage(fromName, scid, symbol, image, fee string) (*OperResp, error) {
+//	validate := ValidateFee(fee, config.MIN_TRANSACTION_FEE)
+//	if validate == false {
+//		return nil, errors.New("Fee is not valid")
+//	}
+//	var owners []string
+//	owners = append(owners, fromName)
+//
+//	var scoperation string
+//	scoperation = fmt.Sprintf("{\"contractName\":\"nft\",\"contractAction\":\"updateMetadata\",\"contractPayload\":{\"symbol\":\"%s\",\"metadata\":{\"image\":\"%s\"}}}", symbol, image)
+//	var trx []types.Operation
+//	tx := &types.SmartContractOperation{
+//		RequiredOwners: owners,
+//		Scid:           scid,
+//		ScOperation:    scoperation,
+//		Fee:            fee,
+//	}
+//	trx = append(trx, tx)
+//	resp, err := client.SendTrx(trx, "")
+//	return &OperResp{NameOper: "SmartContract", Bresp: resp}, err
+//}
 
-	var scoperation string
-	scoperation = fmt.Sprintf("{\"contractName\":\"nft\",\"contractAction\":\"updateMetadata\",\"contractPayload\":{\"symbol\":\"%s\",\"metadata\":{\"url\":\"%s\"}}}", symbol, url)
-	var trx []types.Operation
-	tx := &types.SmartContractOperation{
-		RequiredOwners: owners,
-		Scid:           scid,
-		ScOperation:    scoperation,
-		Fee:            fee,
-	}
-	trx = append(trx, tx)
-	resp, err := client.SendTrx(trx, "")
-	return &OperResp{NameOper: "SmartContract", Bresp: resp}, err
-}
-
-func (client *Client) UpdateImage(fromName, scid, symbol, image, fee string) (*OperResp, error) {
-	validate := ValidateFee(fee, config.MIN_TRANSACTION_FEE)
-	if validate == false {
-		return nil, errors.New("Fee is not valid")
-	}
-	var owners []string
-	owners = append(owners, fromName)
-
-	var scoperation string
-	scoperation = fmt.Sprintf("{\"contractName\":\"nft\",\"contractAction\":\"updateMetadata\",\"contractPayload\":{\"symbol\":\"%s\",\"metadata\":{\"image\":\"%s\"}}}", symbol, image)
-	var trx []types.Operation
-	tx := &types.SmartContractOperation{
-		RequiredOwners: owners,
-		Scid:           scid,
-		ScOperation:    scoperation,
-		Fee:            fee,
-	}
-	trx = append(trx, tx)
-	resp, err := client.SendTrx(trx, "")
-	return &OperResp{NameOper: "SmartContract", Bresp: resp}, err
-}
-
-func (client *Client) UpdateUrlAndImage(fromName, scid, symbol, url, image, fee string) (*OperResp, error) {
+func (client *Client) UpdateMetadata(fromName, scid, symbol, url, image, fee string) (*OperResp, error) {
 	validate := ValidateFee(fee, config.MIN_TRANSACTION_FEE)
 	if validate == false {
 		return nil, errors.New("Fee is not valid")
@@ -249,8 +268,25 @@ func (client *Client) AddProperty(fromName, scid, symbol, propertyName, property
 	var owners []string
 	owners = append(owners, fromName)
 
+	accounts := ""
+	for i, item := range authorizedEditingAccounts {
+		if i == 0 {
+			accounts += "[\"" + item + "\""
+			if i == len(authorizedEditingAccounts)-1 {
+				accounts += "]"
+			}
+		} else if i == len(authorizedEditingAccounts)-1 {
+			accounts += "," + "\"" + item + "\"]"
+		} else {
+			accounts += "," + "\"" + item + "\""
+		}
+	}
 	var scoperation string
-	scoperation = fmt.Sprintf("{\"contractName\":\"nft\",\"contractAction\":\"addProperty\",\"contractPayload\":{\"symbol\":\"%s\",\"name\":\"%s\",\"type\":\"%s\",\"authorizedEditingAccounts\":%v}}", symbol, propertyName, propertyType, authorizedEditingAccounts)
+	if len(authorizedEditingAccounts) > 0 {
+		scoperation = fmt.Sprintf("{\"contractName\":\"nft\",\"contractAction\":\"addProperty\",\"contractPayload\":{\"symbol\":\"%s\",\"name\":\"%s\",\"type\":\"%s\",\"authorizedEditingAccounts\":%s}}", symbol, propertyName, propertyType, accounts)
+	} else {
+		scoperation = fmt.Sprintf("{\"contractName\":\"nft\",\"contractAction\":\"addProperty\",\"contractPayload\":{\"symbol\":\"%s\",\"name\":\"%s\",\"type\":\"%s\"}}", symbol, propertyName, propertyType)
+	}
 	var trx []types.Operation
 	tx := &types.SmartContractOperation{
 		RequiredOwners: owners,
@@ -293,8 +329,13 @@ func (client *Client) IssueWithProperties(fromName, scid, symbol, to, fee string
 	var owners []string
 	owners = append(owners, fromName)
 
+	b, err := json.Marshal(properties)
+	if err != nil {
+		fmt.Printf("Error: %s", err)
+		return nil, err
+	}
 	var scoperation string
-	scoperation = fmt.Sprintf("{\"contractName\":\"nft\",\"contractAction\":\"issue\",\"contractPayload\":{\"symbol\":\"%s\",\"to\":\"%s\",\"toType\":\"user\",\"feeSymbol\":\"BEE\",\"properties\":%v}}", symbol, to, properties)
+	scoperation = fmt.Sprintf("{\"contractName\":\"nft\",\"contractAction\":\"issue\",\"contractPayload\":{\"symbol\":\"%s\",\"to\":\"%s\",\"toType\":\"user\",\"feeSymbol\":\"BEE\",\"properties\":%v}}", symbol, to, string(b))
 	var trx []types.Operation
 	tx := &types.SmartContractOperation{
 		RequiredOwners: owners,
@@ -307,16 +348,24 @@ func (client *Client) IssueWithProperties(fromName, scid, symbol, to, fee string
 	return &OperResp{NameOper: "SmartContract", Bresp: resp}, err
 }
 
-func (client *Client) TransferNFT(fromName, scid, to, fee string, nfts []interface{}) (*OperResp, error) {
+func (client *Client) TransferNFT(fromName, scid, to, fee string, nfts []api.NFTTransferRequest) (*OperResp, error) {
 	validate := ValidateFee(fee, config.MIN_TRANSACTION_FEE)
 	if validate == false {
 		return nil, errors.New("Fee is not valid")
 	}
+	if len(nfts) <= 0 {
+		return nil, errors.New("There is no nft to transfer")
+	}
 	var owners []string
 	owners = append(owners, fromName)
-
+	b, err := json.Marshal(nfts)
+	if err != nil {
+		fmt.Printf("Error: %s", err)
+		return nil, err
+	}
+	data := string(b)
 	var scoperation string
-	scoperation = fmt.Sprintf("{\"contractName\":\"nft\",\"contractAction\":\"transfer\",\"contractPayload\":{\"to\":\"%s\",\"nfts\":%v}}", to, nfts)
+	scoperation = fmt.Sprintf("{\"contractName\":\"nft\",\"contractAction\":\"transfer\",\"contractPayload\":{\"to\":\"%s\",\"nfts\":%v}}", to, data)
 	var trx []types.Operation
 	tx := &types.SmartContractOperation{
 		RequiredOwners: owners,
@@ -329,16 +378,31 @@ func (client *Client) TransferNFT(fromName, scid, to, fee string, nfts []interfa
 	return &OperResp{NameOper: "SmartContract", Bresp: resp}, err
 }
 
-func (client *Client) AddAuthorizedIssuingAccounts(fromName, scid, symbol, fee string, accounts []string) (*OperResp, error) {
+func (client *Client) AddAuthorizedIssuingAccounts(fromName, scid, symbol, fee string, issuingAccounts []string) (*OperResp, error) {
 	validate := ValidateFee(fee, config.MIN_TRANSACTION_FEE)
 	if validate == false {
 		return nil, errors.New("Fee is not valid")
 	}
+	if len(issuingAccounts) <= 0 {
+		return nil, errors.New("There is no account to add")
+	}
 	var owners []string
 	owners = append(owners, fromName)
-
+	accounts := ""
+	for i, item := range issuingAccounts {
+		if i == 0 {
+			accounts += "[\"" + item + "\""
+			if i == len(issuingAccounts)-1 {
+				accounts += "]"
+			}
+		} else if i == len(issuingAccounts)-1 {
+			accounts += "," + "\"" + item + "\"]"
+		} else {
+			accounts += "," + "\"" + item + "\""
+		}
+	}
 	var scoperation string
-	scoperation = fmt.Sprintf("{\"contractName\":\"nft\",\"contractAction\":\"addAuthorizedIssuingAccounts\",\"contractPayload\":{\"symbol\":\"%s\",\"accounts\":%v}}", symbol, accounts)
+	scoperation = fmt.Sprintf("{\"contractName\":\"nft\",\"contractAction\":\"addAuthorizedIssuingAccounts\",\"contractPayload\":{\"symbol\":\"%s\",\"accounts\":%s}}", symbol, accounts)
 	var trx []types.Operation
 	tx := &types.SmartContractOperation{
 		RequiredOwners: owners,
@@ -351,16 +415,31 @@ func (client *Client) AddAuthorizedIssuingAccounts(fromName, scid, symbol, fee s
 	return &OperResp{NameOper: "SmartContract", Bresp: resp}, err
 }
 
-func (client *Client) RemoveAuthorizedIssuingAccounts(fromName, scid, symbol, fee string, accounts []string) (*OperResp, error) {
+func (client *Client) RemoveAuthorizedIssuingAccounts(fromName, scid, symbol, fee string, issuingAccounts []string) (*OperResp, error) {
 	validate := ValidateFee(fee, config.MIN_TRANSACTION_FEE)
 	if validate == false {
 		return nil, errors.New("Fee is not valid")
 	}
+	if len(issuingAccounts) <= 0 {
+		return nil, errors.New("There is no account to remove")
+	}
 	var owners []string
 	owners = append(owners, fromName)
-
+	accounts := ""
+	for i, item := range issuingAccounts {
+		if i == 0 {
+			accounts += "[\"" + item + "\""
+			if i == len(issuingAccounts)-1 {
+				accounts += "]"
+			}
+		} else if i == len(issuingAccounts)-1 {
+			accounts += "," + "\"" + item + "\"]"
+		} else {
+			accounts += "," + "\"" + item + "\""
+		}
+	}
 	var scoperation string
-	scoperation = fmt.Sprintf("{\"contractName\":\"nft\",\"contractAction\":\"removeAuthorizedIssuingAccounts\",\"contractPayload\":{\"symbol\":\"%s\",\"accounts\":%v}}", symbol, accounts)
+	scoperation = fmt.Sprintf("{\"contractName\":\"nft\",\"contractAction\":\"removeAuthorizedIssuingAccounts\",\"contractPayload\":{\"symbol\":\"%s\",\"accounts\":%s}}", symbol, accounts)
 	var trx []types.Operation
 	tx := &types.SmartContractOperation{
 		RequiredOwners: owners,
@@ -395,16 +474,20 @@ func (client *Client) UpdatePropertyDefinition(fromName, scid, symbol, propertyN
 	return &OperResp{NameOper: "SmartContract", Bresp: resp}, err
 }
 
-func (client *Client) SetProperties(fromName, scid, symbol, fee string, nfts []interface{}) (*OperResp, error) {
+func (client *Client) SetProperties(fromName, scid, symbol, fee string, nfts []api.NFTProperty) (*OperResp, error) {
 	validate := ValidateFee(fee, config.MIN_TRANSACTION_FEE)
 	if validate == false {
 		return nil, errors.New("Fee is not valid")
 	}
 	var owners []string
 	owners = append(owners, fromName)
-
+	b, err := json.Marshal(nfts)
+	if err != nil {
+		fmt.Printf("Error: %s", err)
+		return nil, err
+	}
 	var scoperation string
-	scoperation = fmt.Sprintf("{\"contractName\":\"nft\",\"contractAction\":\"setProperties\",\"contractPayload\":{\"symbol\":\"%s\",\"nfts\":%v}}", symbol, nfts)
+	scoperation = fmt.Sprintf("{\"contractName\":\"nft\",\"contractAction\":\"setProperties\",\"contractPayload\":{\"symbol\":\"%s\",\"nfts\":%v}}", symbol, string(b))
 	var trx []types.Operation
 	tx := &types.SmartContractOperation{
 		RequiredOwners: owners,
@@ -417,16 +500,23 @@ func (client *Client) SetProperties(fromName, scid, symbol, fee string, nfts []i
 	return &OperResp{NameOper: "SmartContract", Bresp: resp}, err
 }
 
-func (client *Client) BurnNFT(fromName, scid, fee string, nfts []interface{}) (*OperResp, error) {
+func (client *Client) BurnNFT(fromName, scid, fee string, nfts []api.NFTTransferRequest) (*OperResp, error) {
 	validate := ValidateFee(fee, config.MIN_TRANSACTION_FEE)
 	if validate == false {
 		return nil, errors.New("Fee is not valid")
 	}
+	if len(nfts) <= 0 {
+		return nil, errors.New("There is no nft to burn")
+	}
 	var owners []string
 	owners = append(owners, fromName)
-
+	b, err := json.Marshal(nfts)
+	if err != nil {
+		fmt.Printf("Error: %s", err)
+		return nil, err
+	}
 	var scoperation string
-	scoperation = fmt.Sprintf("{\"contractName\":\"nft\",\"contractAction\":\"burn\",\"contractPayload\":{\"nfts\":%v}}", nfts)
+	scoperation = fmt.Sprintf("{\"contractName\":\"nft\",\"contractAction\":\"burn\",\"contractPayload\":{\"nfts\":%v}}", string(b))
 	var trx []types.Operation
 	tx := &types.SmartContractOperation{
 		RequiredOwners: owners,
@@ -439,16 +529,20 @@ func (client *Client) BurnNFT(fromName, scid, fee string, nfts []interface{}) (*
 	return &OperResp{NameOper: "SmartContract", Bresp: resp}, err
 }
 
-func (client *Client) MultipleIssueNFT(fromName, scid, fee string, instances []interface{}) (*OperResp, error) {
+func (client *Client) MultipleIssueNFT(fromName, scid, fee string, instances []api.Instance) (*OperResp, error) {
 	validate := ValidateFee(fee, config.MIN_TRANSACTION_FEE)
 	if validate == false {
 		return nil, errors.New("Fee is not valid")
 	}
 	var owners []string
 	owners = append(owners, fromName)
-
+	b, err := json.Marshal(instances)
+	if err != nil {
+		fmt.Printf("Error: %s", err)
+		return nil, err
+	}
 	var scoperation string
-	scoperation = fmt.Sprintf("{\"contractName\":\"nft\",\"contractAction\":\"issueMultiple\",\"contractPayload\":{\"instances\":%v}}", instances)
+	scoperation = fmt.Sprintf("{\"contractName\":\"nft\",\"contractAction\":\"issueMultiple\",\"contractPayload\":{\"instances\":%v}}", string(b))
 	var trx []types.Operation
 	tx := &types.SmartContractOperation{
 		RequiredOwners: owners,
