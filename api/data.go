@@ -302,3 +302,25 @@ type NFTBlock struct {
 	SigningKey            string            `json:"signingKey"`
 	RoundSignature        string            `json:"roundSignature"`
 }
+
+type Property struct {
+	Name string      `json:"name"`
+	Data interface{} `json:"data"`
+}
+
+type NFTProperty struct {
+	Properties Property `json:"properties"`
+	Id         string   `json:"id"`
+}
+
+type Instance struct {
+	Symbol    string `json:"symbol"`
+	To        string `json:"to"`
+	ToType    string `json:"toType"`
+	FeeSymbol string `json:"feeSymbol"`
+}
+
+type NFTTransferRequest struct {
+	Symbol string   `json:"symbol"`
+	Ids    []string `json:"ids"`
+}
