@@ -80,20 +80,20 @@ func (client *Client) GetBalance(account, tokenName string, decimals uint8) (*st
 	return client.API.GetBalance(account, tokenName, decimals)
 }
 
-func (client *Client) GetNFTs(symbol string) (*api.NFTList, error) {
-	return client.API.GetNFTs(symbol, 100, 0)
+func (client *Client) GetNFTs(symbol string, limit, offset uint32) (*api.NFTList, error) {
+	return client.API.GetNFTs(symbol, limit, offset)
 }
 
-func (client *Client) GetNFTBalance(account, symbol string) (*api.NFTInstanceList, error) {
-	return client.API.GetNFTBalance(account, symbol, 100, 0)
+func (client *Client) GetNFTBalance(account, symbol string, limit, offset uint32) (*api.NFTInstanceList, error) {
+	return client.API.GetNFTBalance(account, symbol, limit, offset)
 }
 
-func (client *Client) GetNFTInstances(symbol string) (*api.NFTInstanceList, error) {
-	return client.API.GetNFTInstances(symbol, 100, 0)
+func (client *Client) GetNFTInstances(symbol string, limit, offset uint32) (*api.NFTInstanceList, error) {
+	return client.API.GetNFTInstances(symbol, limit, offset)
 }
 
-func (client *Client) GetNFTBalanceOfAccount(account string) (*api.NFTInstanceList, error) {
-	return client.API.GetNFTBalanceOfAccount(account, 100, 0)
+func (client *Client) GetNFTBalanceOfAccount(account string, limit, offset uint32) (map[string]api.NFTInstanceList, error) {
+	return client.API.GetNFTBalanceOfAccount(account, limit, offset)
 }
 
 func (client *Client) GetLatestNFTBlock() (*api.NFTBlock, error) {
@@ -116,7 +116,15 @@ func (client *Client) CreateNFT(fromName, scid, name, symbol, maxSupply, fee str
 	}
 	var owners []string
 	owners = append(owners, fromName)
-
+	if len(name) <= 0 {
+		return nil, errors.New("Name is not valid")
+	}
+	if len(symbol) <= 0 {
+		return nil, errors.New("Symbol is not valid")
+	}
+	if len(scid) <= 0 {
+		scid = "s01"
+	}
 	accounts := ""
 	for i, item := range authorizedIssuingAccounts {
 		if i == 0 {
@@ -133,9 +141,17 @@ func (client *Client) CreateNFT(fromName, scid, name, symbol, maxSupply, fee str
 
 	var scoperation string
 	if len(authorizedIssuingAccounts) > 0 {
-		scoperation = fmt.Sprintf("{\"contractName\":\"nft\",\"contractAction\":\"create\",\"contractPayload\":{\"name\":\"%s\",\"symbol\":\"%s\",\"maxSupply\":\"%s\",\"authorizedIssuingAccounts\":%s}}", name, symbol, maxSupply, accounts)
+		if len(maxSupply) > 0 {
+			scoperation = fmt.Sprintf("{\"contractName\":\"nft\",\"contractAction\":\"create\",\"contractPayload\":{\"name\":\"%s\",\"symbol\":\"%s\",\"maxSupply\":\"%s\",\"authorizedIssuingAccounts\":%s}}", name, symbol, maxSupply, accounts)
+		} else {
+			scoperation = fmt.Sprintf("{\"contractName\":\"nft\",\"contractAction\":\"create\",\"contractPayload\":{\"name\":\"%s\",\"symbol\":\"%s\",\"authorizedIssuingAccounts\":%s}}", name, symbol, accounts)
+		}
 	} else {
-		scoperation = fmt.Sprintf("{\"contractName\":\"nft\",\"contractAction\":\"create\",\"contractPayload\":{\"name\":\"%s\",\"symbol\":\"%s\",\"maxSupply\":\"%s\"}}", name, symbol, maxSupply)
+		if len(maxSupply) > 0 {
+			scoperation = fmt.Sprintf("{\"contractName\":\"nft\",\"contractAction\":\"create\",\"contractPayload\":{\"name\":\"%s\",\"symbol\":\"%s\",\"maxSupply\":\"%s\"}}", name, symbol, maxSupply)
+		} else {
+			scoperation = fmt.Sprintf("{\"contractName\":\"nft\",\"contractAction\":\"create\",\"contractPayload\":{\"name\":\"%s\",\"symbol\":\"%s\"}}", name, symbol)
+		}
 	}
 	//scoperation = fmt.Sprintf("{\"contractName\":\"nft\",\"contractAction\":\"create\",\"contractPayload\":{\"name\":\"%s\",\"symbol\":\"%s\",\"maxSupply\":\"%s\"}}", name, symbol, maxSupply)
 	var trx []types.Operation
@@ -201,7 +217,12 @@ func (client *Client) UpdateMetadata(fromName, scid, symbol, url, image, fee str
 	}
 	var owners []string
 	owners = append(owners, fromName)
-
+	if len(symbol) <= 0 {
+		return nil, errors.New("Symbol is not valid")
+	}
+	if len(scid) <= 0 {
+		scid = "s01"
+	}
 	var scoperation string
 	scoperation = fmt.Sprintf("{\"contractName\":\"nft\",\"contractAction\":\"updateMetadata\",\"contractPayload\":{\"symbol\":\"%s\",\"metadata\":{\"url\":\"%s\",\"image\":\"%s\"}}}", symbol, url, image)
 	var trx []types.Operation
@@ -223,7 +244,12 @@ func (client *Client) UpdateName(fromName, scid, symbol, name, fee string) (*Ope
 	}
 	var owners []string
 	owners = append(owners, fromName)
-
+	if len(symbol) <= 0 {
+		return nil, errors.New("Symbol is not valid")
+	}
+	if len(scid) <= 0 {
+		scid = "s01"
+	}
 	var scoperation string
 	scoperation = fmt.Sprintf("{\"contractName\":\"nft\",\"contractAction\":\"updateName\",\"contractPayload\":{\"symbol\":\"%s\",\"name\":\"%s\"}}", symbol, name)
 	var trx []types.Operation
@@ -245,7 +271,12 @@ func (client *Client) UpdateOrgName(fromName, scid, symbol, orgName, fee string)
 	}
 	var owners []string
 	owners = append(owners, fromName)
-
+	if len(symbol) <= 0 {
+		return nil, errors.New("Symbol is not valid")
+	}
+	if len(scid) <= 0 {
+		scid = "s01"
+	}
 	var scoperation string
 	scoperation = fmt.Sprintf("{\"contractName\":\"nft\",\"contractAction\":\"updateOrgName\",\"contractPayload\":{\"symbol\":\"%s\",\"orgName\":\"%s\"}}", symbol, orgName)
 	var trx []types.Operation
@@ -267,7 +298,15 @@ func (client *Client) AddProperty(fromName, scid, symbol, propertyName, property
 	}
 	var owners []string
 	owners = append(owners, fromName)
-
+	if len(propertyName) <= 0 || len(propertyType) <= 0 {
+		return nil, errors.New("Property is not valid")
+	}
+	if len(symbol) <= 0 {
+		return nil, errors.New("Symbol is not valid")
+	}
+	if len(scid) <= 0 {
+		scid = "s01"
+	}
 	accounts := ""
 	for i, item := range authorizedEditingAccounts {
 		if i == 0 {
@@ -306,6 +345,15 @@ func (client *Client) IssueNFT(fromName, scid, symbol, to, fee string) (*OperRes
 	}
 	var owners []string
 	owners = append(owners, fromName)
+	if len(to) <= 0 {
+		return nil, errors.New("Recipient is not valid")
+	}
+	if len(symbol) <= 0 {
+		return nil, errors.New("Symbol is not valid")
+	}
+	if len(scid) <= 0 {
+		scid = "s01"
+	}
 
 	var scoperation string
 	scoperation = fmt.Sprintf("{\"contractName\":\"nft\",\"contractAction\":\"issue\",\"contractPayload\":{\"symbol\":\"%s\",\"to\":\"%s\",\"toType\":\"user\",\"feeSymbol\":\"BEE\"}}", symbol, to)
@@ -328,7 +376,15 @@ func (client *Client) IssueWithProperties(fromName, scid, symbol, to, fee string
 	}
 	var owners []string
 	owners = append(owners, fromName)
-
+	if len(to) <= 0 {
+		return nil, errors.New("Recipient is not valid")
+	}
+	if len(symbol) <= 0 {
+		return nil, errors.New("Symbol is not valid")
+	}
+	if len(scid) <= 0 {
+		scid = "s01"
+	}
 	b, err := json.Marshal(properties)
 	if err != nil {
 		fmt.Printf("Error: %s", err)
@@ -355,6 +411,12 @@ func (client *Client) TransferNFT(fromName, scid, to, fee string, nfts []api.NFT
 	}
 	if len(nfts) <= 0 {
 		return nil, errors.New("There is no nft to transfer")
+	}
+	if len(to) <= 0 {
+		return nil, errors.New("Recipient is not valid")
+	}
+	if len(scid) <= 0 {
+		scid = "s01"
 	}
 	var owners []string
 	owners = append(owners, fromName)
@@ -385,6 +447,12 @@ func (client *Client) AddAuthorizedIssuingAccounts(fromName, scid, symbol, fee s
 	}
 	if len(issuingAccounts) <= 0 {
 		return nil, errors.New("There is no account to add")
+	}
+	if len(symbol) <= 0 {
+		return nil, errors.New("Symbol is not valid")
+	}
+	if len(scid) <= 0 {
+		scid = "s01"
 	}
 	var owners []string
 	owners = append(owners, fromName)
@@ -423,6 +491,12 @@ func (client *Client) RemoveAuthorizedIssuingAccounts(fromName, scid, symbol, fe
 	if len(issuingAccounts) <= 0 {
 		return nil, errors.New("There is no account to remove")
 	}
+	if len(symbol) <= 0 {
+		return nil, errors.New("Symbol is not valid")
+	}
+	if len(scid) <= 0 {
+		scid = "s01"
+	}
 	var owners []string
 	owners = append(owners, fromName)
 	accounts := ""
@@ -457,6 +531,15 @@ func (client *Client) UpdatePropertyDefinition(fromName, scid, symbol, propertyN
 	if validate == false {
 		return nil, errors.New("Fee is not valid")
 	}
+	if len(propertyName) <= 0 || len(newPropertyName) <= 0 || len(newPropertyType) <= 0 {
+		return nil, errors.New("Property is not valid")
+	}
+	if len(symbol) <= 0 {
+		return nil, errors.New("Symbol is not valid")
+	}
+	if len(scid) <= 0 {
+		scid = "s01"
+	}
 	var owners []string
 	owners = append(owners, fromName)
 
@@ -478,6 +561,15 @@ func (client *Client) SetProperties(fromName, scid, symbol, fee string, nfts []a
 	validate := ValidateFee(fee, config.MIN_TRANSACTION_FEE)
 	if validate == false {
 		return nil, errors.New("Fee is not valid")
+	}
+	if len(nfts) <= 0 {
+		return nil, errors.New("There is no property to set")
+	}
+	if len(symbol) <= 0 {
+		return nil, errors.New("Recipient is not valid")
+	}
+	if len(scid) <= 0 {
+		scid = "s01"
 	}
 	var owners []string
 	owners = append(owners, fromName)
@@ -508,6 +600,9 @@ func (client *Client) BurnNFT(fromName, scid, fee string, nfts []api.NFTTransfer
 	if len(nfts) <= 0 {
 		return nil, errors.New("There is no nft to burn")
 	}
+	if len(scid) <= 0 {
+		scid = "s01"
+	}
 	var owners []string
 	owners = append(owners, fromName)
 	b, err := json.Marshal(nfts)
@@ -533,6 +628,12 @@ func (client *Client) MultipleIssueNFT(fromName, scid, fee string, instances []a
 	validate := ValidateFee(fee, config.MIN_TRANSACTION_FEE)
 	if validate == false {
 		return nil, errors.New("Fee is not valid")
+	}
+	if len(instances) <= 0 {
+		return nil, errors.New("There is no nft to issue")
+	}
+	if len(scid) <= 0 {
+		scid = "s01"
 	}
 	var owners []string
 	owners = append(owners, fromName)
