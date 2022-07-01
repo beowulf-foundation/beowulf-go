@@ -5,6 +5,7 @@ import (
 	"beowulf-go/types"
 	_ "beowulf-go/types"
 	"encoding/json"
+	"github.com/pkg/errors"
 )
 
 func (api *API) GetVersion() (*Version, error) {
@@ -228,12 +229,17 @@ func (api *API) GetNFTs(symbol string, limit, offset uint32) (*NFTList, error) {
 }
 
 func (api *API) GetNFTBalance(account string, symbol string, limit, offset uint32) (*NFTInstanceList, error) {
+	if len(symbol) <= 0 {
+		return nil, errors.New("Symbol can't be null")
+	}
 	var resp NFTInstanceList
 	var params Params
 	params.Contract = "nft"
 	params.Table = symbol + "instances"
 	obj := map[string]interface{}{}
-	obj["account"] = account
+	if len(account) > 0 {
+		obj["account"] = account
+	}
 	params.Query = obj
 	params.Limit = limit
 	params.Offset = offset
@@ -242,6 +248,9 @@ func (api *API) GetNFTBalance(account string, symbol string, limit, offset uint3
 }
 
 func (api *API) GetNFTInstances(symbol string, limit, offset uint32) (*NFTInstanceList, error) {
+	if len(symbol) <= 0 {
+		return nil, errors.New("Symbol can't be null")
+	}
 	var resp NFTInstanceList
 	var params Params
 	params.Contract = "nft"
@@ -254,8 +263,8 @@ func (api *API) GetNFTInstances(symbol string, limit, offset uint32) (*NFTInstan
 	return &resp, err
 }
 
-func (api *API) GetNFTBalanceOfAccount(account string, limit, offset uint32) (*NFTInstanceList, error) {
-	var resp NFTInstanceList
+func (api *API) GetNFTBalanceOfAccount(account string, limit, offset uint32) (map[string]NFTInstanceList, error) {
+	result := make(map[string]NFTInstanceList)
 	var res NFTList
 	var params Params
 	params.Contract = "nft"
@@ -264,13 +273,16 @@ func (api *API) GetNFTBalanceOfAccount(account string, limit, offset uint32) (*N
 	params.Query = obj
 	err := api.call("", "find", params, &res, "s01")
 	for _, element := range res {
+		var resp NFTInstanceList
 		symbol := element.Symbol
 		var instance NFTInstanceList
 		var params Params
 		params.Contract = "nft"
 		params.Table = symbol + "instances"
 		obj := map[string]interface{}{}
-		obj["account"] = account
+		if len(account) > 0 {
+			obj["account"] = account
+		}
 		params.Query = obj
 		params.Limit = limit
 		params.Offset = offset
@@ -278,8 +290,9 @@ func (api *API) GetNFTBalanceOfAccount(account string, limit, offset uint32) (*N
 		if err == nil && len(instance) > 0 {
 			resp = append(resp, instance...)
 		}
+		result[symbol] = resp
 	}
-	return &resp, err
+	return result, err
 }
 func (api *API) GetLatestNFTBlock() (*NFTBlock, error) {
 	var resp NFTBlock
