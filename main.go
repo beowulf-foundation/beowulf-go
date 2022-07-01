@@ -1,6 +1,7 @@
 package main
 
 import (
+	"beowulf-go/api"
 	"beowulf-go/client"
 	"beowulf-go/transactions"
 	"beowulf-go/util"
@@ -52,8 +53,37 @@ func main() {
 	Init()
 	defer Close()
 	//GetRefBlock()
-	CheckNFT()
-	//CreateNFT()
+
+	/*
+		NFT testing
+	*/
+	//CheckNFT()
+	CreateNFT()
+	//UpdateUrlAndImage()
+	//UpdateName()
+	//UpdateOrgName()
+	AddProperty("name", "string")
+	AddProperty("image", "string")
+	AddProperty("externalurl", "string")
+	AddProperty("description", "string")
+	IssueNFT()
+	//IssueWithProperty()
+	IssueWithProperty2()
+	//AddAuthorizedIssuingAccounts()
+	//RemoveAuthorizedIssuingAccounts()
+	//UpdatePropertyDefinition()
+	//SetProperties()
+	//MultipleIssueNFT()
+	TransferNFT()
+	BurnNFT()
+
+	//GetNFTBalance()
+	//GetNFTInstances()
+	//GetNFTBalanceOfAccount()
+	GetNFTTransaction()
+	GetLatestNFTBlock()
+	GetNFTBlock()
+
 	//// 1. ZeroCoin && IssueCoin
 	//CheckTotalCoin()
 	//ZeroCoin()
@@ -97,6 +127,285 @@ func CreateNFT() {
 
 	accounts := []string{}
 	res, err := cli.CreateNFT("beowulf", "s01", "GONFT", "GONFT", "10000000", "0.01000 W", accounts)
+	//res, err := cli.Transfer("beowulf", "beowulf2", "nothing", "0.10000 W", "0.01000 W")
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println(res)
+	}
+}
+
+//func UpdateUrl() {
+//	cli, _ := client.NewClient(url, true)
+//	defer cli.Close()
+//	cli.SetKeys(&client.Keys{OKey: []string{key}})
+//
+//	res, err := cli.UpdateUrl("beowulf", "s01", "GONFT", "https://google.com", "0.01000 W")
+//	//res, err := cli.Transfer("beowulf", "beowulf2", "nothing", "0.10000 W", "0.01000 W")
+//	if err != nil {
+//		fmt.Println(err)
+//	} else {
+//		fmt.Println(res)
+//	}
+//}
+//
+//func UpdateImage() {
+//	cli, _ := client.NewClient(url, true)
+//	defer cli.Close()
+//	cli.SetKeys(&client.Keys{OKey: []string{key}})
+//
+//	res, err := cli.UpdateImage("beowulf", "s01", "GONFT", "https://image.com", "0.01000 W")
+//	//res, err := cli.Transfer("beowulf", "beowulf2", "nothing", "0.10000 W", "0.01000 W")
+//	if err != nil {
+//		fmt.Println(err)
+//	} else {
+//		fmt.Println(res)
+//	}
+//}
+
+func UpdateUrlAndImage() {
+	cli, _ := client.NewClient(url, true)
+	defer cli.Close()
+	cli.SetKeys(&client.Keys{OKey: []string{key}})
+
+	res, err := cli.UpdateMetadata("beowulf", "s01", "GONFT", "https://url.com", "https://image.update.vn", "0.01000 W")
+	//res, err := cli.Transfer("beowulf", "beowulf2", "nothing", "0.10000 W", "0.01000 W")
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println(res)
+	}
+}
+
+func UpdateName() {
+	cli, _ := client.NewClient(url, true)
+	defer cli.Close()
+	cli.SetKeys(&client.Keys{OKey: []string{key}})
+
+	res, err := cli.UpdateName("beowulf", "s01", "GONFT", "HELLONFT", "0.01000 W")
+	//res, err := cli.Transfer("beowulf", "beowulf2", "nothing", "0.10000 W", "0.01000 W")
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println(res)
+	}
+}
+
+func UpdateOrgName() {
+	cli, _ := client.NewClient(url, true)
+	defer cli.Close()
+	cli.SetKeys(&client.Keys{OKey: []string{key}})
+
+	res, err := cli.UpdateOrgName("beowulf", "s01", "GONFT", "ORG", "0.01000 W")
+	//res, err := cli.Transfer("beowulf", "beowulf2", "nothing", "0.10000 W", "0.01000 W")
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println(res)
+	}
+}
+
+func AddProperty(propertyName, propertyType string) {
+	cli, _ := client.NewClient(url, true)
+	defer cli.Close()
+	cli.SetKeys(&client.Keys{OKey: []string{key}})
+
+	accounts := []string{}
+	accounts = append(accounts, "beowulf")
+	res, err := cli.AddProperty("beowulf", "s01", "GONFT", propertyName, propertyType, "0.01000 W", accounts)
+	//res, err := cli.Transfer("beowulf", "beowulf2", "nothing", "0.10000 W", "0.01000 W")
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println(res)
+	}
+}
+
+func IssueNFT() {
+	cli, _ := client.NewClient(url, true)
+	defer cli.Close()
+	cli.SetKeys(&client.Keys{OKey: []string{key}})
+
+	res, err := cli.IssueNFT("beowulf", "s01", "GONFT", "beowulf", "0.01000 W")
+	//res, err := cli.Transfer("beowulf", "beowulf2", "nothing", "0.10000 W", "0.01000 W")
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println(res)
+	}
+}
+
+type PropertyRequest struct {
+	RoomId string `json:"roomId"`
+}
+
+type PropertyRequest2 struct {
+	Name        string `json:"name"`
+	Image       string `json:"image"`
+	Externalurl string `json:"externalurl"`
+	Description string `json:"description"`
+}
+
+func IssueWithProperty() {
+	cli, _ := client.NewClient(url, true)
+	defer cli.Close()
+	cli.SetKeys(&client.Keys{OKey: []string{key}})
+
+	//var properties PropertyRequest
+	//properties.RoomName = "A101"
+	properties := &PropertyRequest{RoomId: "001"}
+	res, err := cli.IssueWithProperties("beowulf", "s01", "GONFT", "beowulf", "0.01000 W", properties)
+	//res, err := cli.Transfer("beowulf", "beowulf2", "nothing", "0.10000 W", "0.01000 W")
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println(res)
+	}
+}
+
+func IssueWithProperty2() {
+	cli, _ := client.NewClient(url, true)
+	defer cli.Close()
+	cli.SetKeys(&client.Keys{OKey: []string{key}})
+
+	//var properties PropertyRequest
+	//properties.RoomName = "A101"
+	properties := &PropertyRequest2{Name: "Oriental Nha Trang Hotel: Stay on Jul 02, 2022", Image: "https://crystabaya-public-staging.s3.ap-southeast-1.amazonaws.com/arts/3.jpg", Externalurl: "https://crystabaya.com/property?id=29vXQMeu7tAacNZSvbF3UVSd6Fl", Description: "This Crystabaya NFT token represents one hotel stay at the Oriental Nha Trang Hotel for a stay on Jul 02, 2022.\\n\\nTo redeem this token, please do the following steps:\\n\\n1. Open an account on [Crystabaya.com](https://crystabaya.com)\\n\\n2. Get the wallet address for your account\\n\\n3. Deposit this token into the wallet address above\\n\\nThat's it. You will be able to check-in at the hotel for the stay on the date above.\\n\\nOnce redeemed, you will also receive a hand-drawing collectible artwork included in this NFT token as a souvenir. You can withdraw it back to your own wallet and/or trade it on OpenSea if desirable."}
+	res, err := cli.IssueWithProperties("beowulf", "s01", "GONFT", "khoa01", "0.01000 W", properties)
+	//res, err := cli.Transfer("beowulf", "beowulf2", "nothing", "0.10000 W", "0.01000 W")
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println(res)
+	}
+}
+
+func AddAuthorizedIssuingAccounts() {
+	cli, _ := client.NewClient(url, true)
+	defer cli.Close()
+	cli.SetKeys(&client.Keys{OKey: []string{key}})
+
+	accounts := []string{}
+	accounts = append(accounts, "beowulf2")
+	res, err := cli.AddAuthorizedIssuingAccounts("beowulf", "s01", "GONFT", "0.01000 W", accounts)
+	//res, err := cli.Transfer("beowulf", "beowulf2", "nothing", "0.10000 W", "0.01000 W")
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println(res)
+	}
+}
+
+func RemoveAuthorizedIssuingAccounts() {
+	cli, _ := client.NewClient(url, true)
+	defer cli.Close()
+	cli.SetKeys(&client.Keys{OKey: []string{key}})
+
+	accounts := []string{}
+	accounts = append(accounts, "beowulf2")
+	res, err := cli.RemoveAuthorizedIssuingAccounts("beowulf", "s01", "GONFT", "0.01000 W", accounts)
+	//res, err := cli.Transfer("beowulf", "beowulf2", "nothing", "0.10000 W", "0.01000 W")
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println(res)
+	}
+}
+
+func UpdatePropertyDefinition() {
+	cli, _ := client.NewClient(url, true)
+	defer cli.Close()
+	cli.SetKeys(&client.Keys{OKey: []string{key}})
+
+	res, err := cli.UpdatePropertyDefinition("beowulf", "s01", "GONFT", "roomName", "roomCode", "string", "0.01000 W")
+	//res, err := cli.Transfer("beowulf", "beowulf2", "nothing", "0.10000 W", "0.01000 W")
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println(res)
+	}
+}
+
+func SetProperties() {
+	cli, _ := client.NewClient(url, true)
+	defer cli.Close()
+	cli.SetKeys(&client.Keys{OKey: []string{key}})
+
+	var properties []api.NFTProperty
+	var property api.NFTProperty
+	property.Id = "2"
+	var p api.Property
+	p.Name = "roomId"
+	p.Data = "206"
+	property.Properties = p
+	properties = append(properties, property)
+	res, err := cli.SetProperties("beowulf", "s01", "GONFT", "0.01000 W", properties)
+	//res, err := cli.Transfer("beowulf", "beowulf2", "nothing", "0.10000 W", "0.01000 W")
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println(res)
+	}
+}
+
+func MultipleIssueNFT() {
+	cli, _ := client.NewClient(url, true)
+	defer cli.Close()
+	cli.SetKeys(&client.Keys{OKey: []string{key}})
+
+	var instances []api.Instance
+	var instance1 api.Instance
+	instance1.To = "beowulf"
+	instance1.Symbol = "GONFT"
+	instance1.FeeSymbol = "BEE"
+	instance1.ToType = "user"
+	var instance2 api.Instance
+	instance2.To = "beowulf2"
+	instance2.Symbol = "GONFT"
+	instance2.FeeSymbol = "BEE"
+	instance2.ToType = "user"
+	instances = append(instances, instance1, instance2)
+	res, err := cli.MultipleIssueNFT("beowulf", "s01", "0.01000 W", instances)
+	//res, err := cli.Transfer("beowulf", "beowulf2", "nothing", "0.10000 W", "0.01000 W")
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println(res)
+	}
+}
+
+func TransferNFT() {
+	cli, _ := client.NewClient(url, true)
+	defer cli.Close()
+	cli.SetKeys(&client.Keys{OKey: []string{key}})
+
+	var nfts []api.NFTTransferRequest
+	var nft api.NFTTransferRequest
+	var ids []string
+	ids = append(ids, "1")
+	nft.Symbol = "GONFT"
+	nft.Ids = ids
+	nfts = append(nfts, nft)
+	res, err := cli.TransferNFT("beowulf", "s01", "beowulf2", "0.01000 W", nfts)
+	//res, err := cli.Transfer("beowulf", "beowulf2", "nothing", "0.10000 W", "0.01000 W")
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println(res)
+	}
+}
+
+func BurnNFT() {
+	cli, _ := client.NewClient(url, true)
+	defer cli.Close()
+	cli.SetKeys(&client.Keys{OKey: []string{key}})
+
+	var nfts []api.NFTTransferRequest
+	var nft api.NFTTransferRequest
+	nft.Symbol = "GONFT"
+	nft.Ids = append(nft.Ids, "1")
+	nfts = append(nfts, nft)
+	res, err := cli.BurnNFT("beowulf", "s01", "0.01000 W", nfts)
 	//res, err := cli.Transfer("beowulf", "beowulf2", "nothing", "0.10000 W", "0.01000 W")
 	if err != nil {
 		fmt.Println(err)
@@ -369,7 +678,91 @@ func CheckNFT() {
 	cli, _ := client.NewClient(url, true)
 	defer cli.Close()
 
-	nfts, err := cli.GetNFTs("")
+	nfts, err := cli.GetNFTs("", 100, 0)
+	if err != nil {
+		fmt.Println("Err", err)
+	} else {
+		fmt.Println("NFTs", nfts)
+	}
+}
+
+func GetNFTBalance() {
+	time.Sleep(1 * time.Second)
+
+	cli, _ := client.NewClient(url, true)
+	defer cli.Close()
+
+	nfts, err := cli.GetNFTBalance("khoa02", "CBAYNFT", 100, 0)
+	if err != nil {
+		fmt.Println("Err", err)
+	} else {
+		fmt.Println("NFTs", nfts)
+	}
+}
+
+func GetNFTInstances() {
+	time.Sleep(1 * time.Second)
+
+	cli, _ := client.NewClient(url, true)
+	defer cli.Close()
+
+	nfts, err := cli.GetNFTInstances("CBAYNFT", 100, 0)
+	if err != nil {
+		fmt.Println("Err", err)
+	} else {
+		fmt.Println("NFTs", nfts)
+	}
+}
+
+func GetNFTBalanceOfAccount() {
+	time.Sleep(1 * time.Second)
+
+	cli, _ := client.NewClient(url, true)
+	defer cli.Close()
+
+	nfts, err := cli.GetNFTBalanceOfAccount("khoa02", 100, 0)
+	if err != nil {
+		fmt.Println("Err", err)
+	} else {
+		fmt.Println("NFTs", nfts)
+	}
+}
+
+func GetLatestNFTBlock() {
+	time.Sleep(1 * time.Second)
+
+	cli, _ := client.NewClient(url, true)
+	defer cli.Close()
+
+	nfts, err := cli.GetLatestNFTBlock()
+	if err != nil {
+		fmt.Println("Err", err)
+	} else {
+		fmt.Println("NFTs", nfts)
+	}
+}
+
+func GetNFTBlock() {
+	time.Sleep(1 * time.Second)
+
+	cli, _ := client.NewClient(url, true)
+	defer cli.Close()
+
+	nfts, err := cli.GetNFTBlock(20)
+	if err != nil {
+		fmt.Println("Err", err)
+	} else {
+		fmt.Println("NFTs", nfts)
+	}
+}
+
+func GetNFTTransaction() {
+	time.Sleep(1 * time.Second)
+
+	cli, _ := client.NewClient(url, true)
+	defer cli.Close()
+
+	nfts, err := cli.GetNFTTransaction("7129ca688321d386e670b093610bb0db68714eac")
 	if err != nil {
 		fmt.Println("Err", err)
 	} else {
