@@ -26,7 +26,7 @@ type Version struct {
 
 //Config structure for the GetConfig function.
 type Config struct {
-	TokenCreationFee int `json:"SMT_TOKEN_CREATION_FEE"`
+	TokenCreationFee int `json:"SMT_TOKEN_CREATION_FEE_HF1"`
 	//WDSymbol						 string		   `json:"WD_SYMBOL"`
 	Percent100                            *types.Int  `json:"BEOWULF_100_PERCENT"`
 	Percent1                              *types.Int  `json:"BEOWULF_1_PERCENT"`
@@ -40,7 +40,7 @@ type Config struct {
 	GenesisTime                           *types.Time `json:"BEOWULF_GENESIS_TIME"`
 	HardforkRequiredSupernodes            *types.Int  `json:"BEOWULF_HARDFORK_REQUIRED_SUPERNODES"`
 	InflationNarrowingPeriod              *types.Int  `json:"BEOWULF_INFLATION_NARROWING_PERIOD"`
-	InflationRateStartPercent             *types.Int  `json:"BEOWULF_INFLATION_RATE_START_PERCENT"`
+	InflationRateStartPercent             *types.Int  `json:"BEOWULF_INFLATION_RATE_START_PERCENT_HF1"`
 	InflationRateStopPercent              *types.Int  `json:"BEOWULF_INFLATION_RATE_STOP_PERCENT"`
 	InitiatorName                         string      `json:"BEOWULF_INIT_MINER_NAME"`
 	InitiatorPublicKey                    string      `json:"BEOWULF_INIT_PUBLIC_KEY_STR"`
@@ -59,12 +59,12 @@ type Config struct {
 	MaxSigCheckDepth                      *types.Int  `json:"BEOWULF_MAX_SIG_CHECK_DEPTH"`
 	MaxSigCheckAccounts                   *types.Int  `json:"BEOWULF_MAX_SIG_CHECK_ACCOUNTS"`
 	MaxTimeUntilExpiration                int         `json:"BEOWULF_MAX_TIME_UNTIL_EXPIRATION"`
-	MaxTransactionSize                    *types.Int  `json:"BEOWULF_MAX_TRANSACTION_SIZE"`
+	MaxTransactionSize                    *types.Int  `json:"BEOWULF_MAX_TRANSACTION_SIZE_HF1"`
 	MaxUndoHistory                        *types.Int  `json:"BEOWULF_MAX_UNDO_HISTORY"`
 	MaxVotedSupernodes                    *types.Int  `json:"BEOWULF_MAX_VOTED_SUPERNODES_HF0"`
 	MinSupernodeFund                      *types.Int  `json:"BEOWULF_MIN_SUPERNODE_FUND"`
 	MinTransactionFee                     *types.Int  `json:"BEOWULF_MIN_TRANSACTION_FEE"`
-	MinAccountCreationFee                 *types.Int  `json:"BEOWULF_MIN_ACCOUNT_CREATION_FEE"`
+	MinAccountCreationFee                 *types.Int  `json:"BEOWULF_MIN_ACCOUNT_CREATION_FEE_HF1"`
 	MinAccountNameLength                  *types.Int  `json:"BEOWULF_MIN_ACCOUNT_NAME_LENGTH"`
 	MinBlockSizeLimit                     *types.Int  `json:"BEOWULF_MIN_BLOCK_SIZE"`
 	NullAccount                           string      `json:"BEOWULF_NULL_ACCOUNT"`
