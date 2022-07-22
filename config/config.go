@@ -23,3 +23,5 @@ const MIN_TRANSACTION_FEE = 0.01000
 const MIN_ACCOUNT_CREATION_FEE = 0.01000
 
 const NAME_LETTER = "0123456789abcdefghijklmnopqrstuvwxyz-"
+
+const SYMBOL_LETTER = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
