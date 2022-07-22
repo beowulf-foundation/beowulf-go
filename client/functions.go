@@ -119,8 +119,9 @@ func (client *Client) CreateNFT(fromName, scid, name, symbol, maxSupply, fee str
 	if len(name) <= 0 {
 		return nil, errors.New("Name is not valid")
 	}
-	if len(symbol) <= 0 {
-		return nil, errors.New("Symbol is not valid")
+	validateSymbol := ValidateNftSymbol(symbol)
+	if validateSymbol != nil {
+		return nil, validateSymbol
 	}
 	if len(scid) <= 0 {
 		scid = "s01"
@@ -1239,4 +1240,19 @@ func ValidateAmount(amount string) bool {
 		return false
 	}
 	return true
+}
+
+func ValidateNftSymbol(symbol string) error {
+	if symbol == "" {
+		return errors.New("Symbol is not empty")
+	}
+	if len(symbol) > 100 {
+		return errors.New("Symbol length is maximum 100 characters")
+	}
+	for _, c := range symbol {
+		if !strings.Contains(config.SYMBOL_LETTER, string(c)) {
+			return errors.New("Symbol contains character invalid")
+		}
+	}
+	return nil
 }
