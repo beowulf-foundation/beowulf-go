@@ -1,8 +1,9 @@
 package api
 
 import (
-	"beowulf-go/transports"
 	"encoding/json"
+
+	"github.com/beowulf-foundation/beowulf-go/transports"
 )
 
 //API plug-in structure

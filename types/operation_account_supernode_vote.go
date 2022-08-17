@@ -1,16 +1,16 @@
 package types
 
 import (
-	"beowulf-go/encoding/transaction"
+	"github.com/beowulf-foundation/beowulf-go/encoding/transaction"
 )
 
 //AccountSupernodeVoteOperation represents account_supernode_vote operation data.
 type AccountSupernodeVoteOperation struct {
-	Account 	string 	`json:"account"`
-	Supernode 	string 	`json:"supernode"`
-	Approve 	bool   	`json:"approve"`
-	Votes		int64	`json:"votes"`
-	Fee         string  `json:"fee"`
+	Account   string `json:"account"`
+	Supernode string `json:"supernode"`
+	Approve   bool   `json:"approve"`
+	Votes     int64  `json:"votes"`
+	Fee       string `json:"fee"`
 }
 
 //Type function that defines the type of operation AccountSupernodeVoteOperation.

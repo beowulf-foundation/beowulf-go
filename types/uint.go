@@ -3,7 +3,8 @@ package types
 import (
 	"encoding/json"
 	"strconv"
-	"beowulf-go/encoding/transaction"
+
+	"github.com/beowulf-foundation/beowulf-go/encoding/transaction"
 	"github.com/pkg/errors"
 )
 

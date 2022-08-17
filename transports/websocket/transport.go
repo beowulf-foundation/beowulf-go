@@ -1,15 +1,16 @@
 package websocket
 
 import (
-	"beowulf-go/types"
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/websocket"
-	"github.com/pkg/errors"
 	"log"
 	"math"
 	"sync"
 	"time"
+
+	"github.com/beowulf-foundation/beowulf-go/types"
+	"github.com/gorilla/websocket"
+	"github.com/pkg/errors"
 )
 
 var (

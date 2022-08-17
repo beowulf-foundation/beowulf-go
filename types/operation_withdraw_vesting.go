@@ -1,14 +1,14 @@
 package types
 
 import (
-	"beowulf-go/encoding/transaction"
+	"github.com/beowulf-foundation/beowulf-go/encoding/transaction"
 )
 
 //WithdrawVestingOperation represents withdraw_vesting operation data.
 type WithdrawVestingOperation struct {
 	Account       string `json:"account"`
 	VestingShares string `json:"vesting_shares"`
-	Fee			  string `json:"fee"`
+	Fee           string `json:"fee"`
 }
 
 //Type function that defines the type of operation WithdrawVestingOperation.

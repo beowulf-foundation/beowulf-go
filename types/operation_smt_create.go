@@ -1,18 +1,18 @@
 package types
 
 import (
-	"beowulf-go/encoding/transaction"
+	"github.com/beowulf-foundation/beowulf-go/encoding/transaction"
 )
 
 //SmtCreateOperation represents transfer operation data.
 type SmtCreateOperation struct {
-	ControlAccount 	string 	`json:"control_account"`
-	Symbol			*AssetSymbol `json:"symbol"`
-	Creator			string	`json:"creator"`
-	SmtCreationFee  string  `json:"smt_creation_fee"`
-	Precision		uint8   `json:"precision"`
-	Extensions      [][]interface{}      `json:"extensions"`
-	MaxSupply		uint64	`json:"max_supply"`
+	ControlAccount string          `json:"control_account"`
+	Symbol         *AssetSymbol    `json:"symbol"`
+	Creator        string          `json:"creator"`
+	SmtCreationFee string          `json:"smt_creation_fee"`
+	Precision      uint8           `json:"precision"`
+	Extensions     [][]interface{} `json:"extensions"`
+	MaxSupply      uint64          `json:"max_supply"`
 }
 
 //Type function that defines the type of operation SmtCreateOperation.

@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"reflect"
+
 	// Vendor
 	"github.com/pkg/errors"
 )
@@ -26,6 +27,7 @@ var dataObjects = map[OpType]Operation{
 	TypeHardfork:                &HardforkOperation{},                //Virtual Operation
 	TypeProducerReward:          &ProducerRewardOperation{},          //Virtual Operation
 	TypeClearNullAccountBalance: &ClearNullAccountBalanceOperation{}, //Virtual Operation
+	TypeScbValidate:             &ScbValidateOperation{},
 }
 
 // Operation represents an operation stored in a transaction.

@@ -1,7 +1,7 @@
 package types
 
 import (
-	"beowulf-go/encoding/transaction"
+	"github.com/beowulf-foundation/beowulf-go/encoding/transaction"
 )
 
 //Authority is an additional structure used by other structures.

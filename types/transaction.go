@@ -1,8 +1,9 @@
 package types
 
 import (
-	"beowulf-go/encoding/transaction"
 	"errors"
+
+	"github.com/beowulf-foundation/beowulf-go/encoding/transaction"
 )
 
 // Transaction represents a blockchain transaction.

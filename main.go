@@ -1,18 +1,19 @@
 package main
 
 import (
-	"beowulf-go/api"
-	"beowulf-go/client"
-	"beowulf-go/transactions"
-	"beowulf-go/util"
 	"encoding/json"
 	"fmt"
-	"github.com/shettyh/threadpool"
 	"io/ioutil"
 	"math/rand"
 	"os"
 	"strconv"
 	"time"
+
+	"github.com/beowulf-foundation/beowulf-go/api"
+	"github.com/beowulf-foundation/beowulf-go/client"
+	"github.com/beowulf-foundation/beowulf-go/transactions"
+	"github.com/beowulf-foundation/beowulf-go/util"
+	"github.com/shettyh/threadpool"
 )
 
 // 1. https://gobyexample.com/worker-pools
@@ -30,7 +31,9 @@ var MAP_NAME = make(map[int32]string)
 const IsAsync bool = true
 const work_dir = "/home/nghiatc/go-projects/src/beowulf-go"
 const file_path = work_dir + string(os.PathSeparator) + "bwc100.json"
-const url string = "https://testnet-bw.beowulfchain.com/rpc" // Replace this url with your node url
+const url string = "http://35.220.140.28:8376"
+
+// const url string = "https://testnet-bw.beowulfchain.com/rpc" // Replace this url with your node url
 const creator = "nghia"
 
 //const key = "5JEUvsDmUxLhPZLsQdofQqMnFxBob6bpXcmJ5i54stf34PqQfyb" // nghia
@@ -59,6 +62,7 @@ func main() {
 	*/
 	//CheckNFT()
 	CreateNFT()
+	CommitSidechainBlock()
 	//UpdateUrlAndImage()
 	//UpdateName()
 	//UpdateOrgName()
@@ -118,6 +122,27 @@ func main() {
 	fmt.Println("====================================================================")
 	fmt.Println("==============================End Main==============================")
 	fmt.Println("====================================================================")
+}
+
+func CommitSidechainBlock() {
+	cli, _ := client.NewClient(url, true)
+	defer cli.Close()
+	cli.SetKeys(&client.Keys{OKey: []string{key}})
+	c := fmt.Sprintf("0x58e983428796f23f235ea13bf02039030464d947262b39fef842c8f97eee8ee7125")
+	operResp, err := cli.CommitScb("edge", "beowulf", c, "0.01000 W")
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println(operResp)
+		fmt.Println("Tx id: ", operResp.Bresp.ID)
+		time.Sleep(5 * time.Second)
+		tx, er := cli.GetTransaction(operResp.Bresp.ID)
+		if er != nil {
+			fmt.Println(er)
+		} else {
+			fmt.Println("Result tx: \n", tx)
+		}
+	}
 }
 
 func CreateNFT() {

@@ -1,14 +1,15 @@
 package client
 
 import (
-	"beowulf-go/config"
 	"crypto/rand"
 	"crypto/sha512"
 	"encoding/json"
-	"github.com/pkg/errors"
 	"io/ioutil"
 	"math/big"
 	"os"
+
+	"github.com/beowulf-foundation/beowulf-go/config"
+	"github.com/pkg/errors"
 )
 
 var (

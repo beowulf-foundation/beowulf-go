@@ -5,33 +5,30 @@ import (
 )
 
 //SmartContractOperation represents transfer operation data.
-type SmartContractOperation struct {
-	RequiredOwners StringSlice `json:"required_owners"`
-	Scid           string      `json:"scid"`
-	ScOperation    string      `json:"sc_operation"`
-	Fee            string      `json:"fee"`
+type ScbValidateOperation struct {
+	Committer   string `json:"committer"`
+	Scid        string `json:"scid"`
+	ScOperation string `json:"sc_operation"`
+	Fee         string `json:"fee"`
 }
 
 //Type function that defines the type of operation SmartContractOperation.
-func (op *SmartContractOperation) Type() OpType {
-	return TypeSmartContract
+func (op *ScbValidateOperation) Type() OpType {
+	return TypeScbValidate
 }
 
 //Data returns the operation data SmartContractOperation.
-func (op *SmartContractOperation) Data() interface{} {
+func (op *ScbValidateOperation) Data() interface{} {
 	return op
 }
 
 //MarshalTransaction is a function of converting type SmtCreateOperation to bytes.
-func (op *SmartContractOperation) MarshalTransaction(encoder *transaction.Encoder) error {
+func (op *ScbValidateOperation) MarshalTransaction(encoder *transaction.Encoder) error {
 	enc := transaction.NewRollingEncoder(encoder)
-	enc.EncodeUVarint(uint64(TypeSmartContract.Code()))
+	enc.EncodeUVarint(uint64(TypeScbValidate.Code()))
 	//enc.Encode(op.RequiredOwners)
 	// encode AccountAuths as map[string]uint16
-	enc.EncodeUVarint(uint64(len(op.RequiredOwners)))
-	for _, v := range op.RequiredOwners {
-		enc.EncodeString(v)
-	}
+	enc.EncodeString(op.Committer)
 	enc.Encode(op.Scid)
 	enc.Encode(op.ScOperation)
 	enc.EncodeMoney(op.Fee)

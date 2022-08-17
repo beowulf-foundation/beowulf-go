@@ -1,15 +1,15 @@
 package types
 
 import (
-	"beowulf-go/encoding/transaction"
+	"github.com/beowulf-foundation/beowulf-go/encoding/transaction"
 )
 
 //AccountUpdateOperation represents account_update operation data.
 type AccountUpdateOperation struct {
-	Account      string     `json:"account"`
-	Owner        *Authority `json:"owner,omitempty"`
-	JSONMetadata *AccountMetadata     `json:"json_metadata"`
-	Fee          string     `json:"fee"`
+	Account      string           `json:"account"`
+	Owner        *Authority       `json:"owner,omitempty"`
+	JSONMetadata *AccountMetadata `json:"json_metadata"`
+	Fee          string           `json:"fee"`
 }
 
 //Type function that defines the type of operation AccountUpdateOperation.

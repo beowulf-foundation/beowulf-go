@@ -23,6 +23,7 @@ const (
 	TypeHardfork                OpType = "hardfork"                   //Virtual Operation
 	TypeProducerReward          OpType = "producer_reward"            //Virtual Operation
 	TypeClearNullAccountBalance OpType = "clear_null_account_balance" //Virtual Operation
+	TypeScbValidate             OpType = "scb_validate"
 )
 
 var opTypes = [...]OpType{
@@ -40,6 +41,7 @@ var opTypes = [...]OpType{
 	TypeHardfork,                //Virtual Operation
 	TypeProducerReward,          //Virtual Operation
 	TypeClearNullAccountBalance, //Virtual Operation
+	TypeScbValidate,
 }
 
 // opCodes keeps mapping operation type -> operation code.

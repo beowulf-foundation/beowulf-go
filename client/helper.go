@@ -1,8 +1,8 @@
 package client
 
 import (
-	"beowulf-go/transactions"
-	"beowulf-go/types"
+	"github.com/beowulf-foundation/beowulf-go/transactions"
+	"github.com/beowulf-foundation/beowulf-go/types"
 )
 
 //SetAsset returns data of type Asset

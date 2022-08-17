@@ -1,17 +1,18 @@
 package http
 
 import (
-	"beowulf-go/config"
-	"beowulf-go/types"
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/pkg/errors"
 	"io/ioutil"
 	"math"
 	"net/http"
 	"sync"
 	"time"
+
+	"github.com/beowulf-foundation/beowulf-go/config"
+	"github.com/beowulf-foundation/beowulf-go/types"
+	"github.com/pkg/errors"
 )
 
 type Transport struct {

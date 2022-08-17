@@ -1,16 +1,16 @@
 package types
 
 import (
-	"beowulf-go/encoding/transaction"
+	"github.com/beowulf-foundation/beowulf-go/encoding/transaction"
 )
 
 //AccountCreateOperation represents account_create operation data.
 type AccountCreateOperation struct {
-	Fee            string     `json:"fee"`
-	Creator        string     `json:"creator"`
-	NewAccountName string     `json:"new_account_name"`
-	Owner          *Authority `json:"owner"`
-	JSONMetadata   *AccountMetadata     `json:"json_metadata"`
+	Fee            string           `json:"fee"`
+	Creator        string           `json:"creator"`
+	NewAccountName string           `json:"new_account_name"`
+	Owner          *Authority       `json:"owner"`
+	JSONMetadata   *AccountMetadata `json:"json_metadata"`
 }
 
 //Type function that defines the type of operation AccountCreateOperation.

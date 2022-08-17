@@ -2,7 +2,8 @@ package types
 
 import (
 	"time"
-	"beowulf-go/encoding/transaction"
+
+	"github.com/beowulf-foundation/beowulf-go/encoding/transaction"
 )
 
 const layout = `"2006-01-02T15:04:05"`

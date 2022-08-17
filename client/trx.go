@@ -1,18 +1,19 @@
 package client
 
 import (
-	"beowulf-go/api"
-	"beowulf-go/config"
-	"beowulf-go/transactions"
-	"beowulf-go/types"
 	"time"
+
+	"github.com/beowulf-foundation/beowulf-go/api"
+	"github.com/beowulf-foundation/beowulf-go/config"
+	"github.com/beowulf-foundation/beowulf-go/transactions"
+	"github.com/beowulf-foundation/beowulf-go/types"
 )
 
 var RefBlockMap = make(map[time.Time]uint32)
 
 //BResp of response when sending a transaction.
 type BResp struct {
-	ID string
+	ID      string
 	JSONTrx string
 }
 

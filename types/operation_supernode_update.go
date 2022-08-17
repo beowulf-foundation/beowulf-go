@@ -1,14 +1,14 @@
 package types
 
 import (
-	"beowulf-go/encoding/transaction"
+	"github.com/beowulf-foundation/beowulf-go/encoding/transaction"
 )
 
 //SupernodeUpdateOperation represents supernode_update operation data.
 type SupernodeUpdateOperation struct {
-	Owner           string           `json:"owner"`
-	BlockSigningKey string           `json:"block_signing_key"`
-	Fee             string           `json:"fee"`
+	Owner           string `json:"owner"`
+	BlockSigningKey string `json:"block_signing_key"`
+	Fee             string `json:"fee"`
 }
 
 //Type function that defines the type of operation SupernodeUpdateOperation.

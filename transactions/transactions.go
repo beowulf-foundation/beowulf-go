@@ -5,8 +5,9 @@ import (
 	"bytes"
 	"encoding/binary"
 	"encoding/hex"
+
 	// RPC
-	"beowulf-go/types"
+	"github.com/beowulf-foundation/beowulf-go/types"
 	// Vendor
 	"github.com/pkg/errors"
 )

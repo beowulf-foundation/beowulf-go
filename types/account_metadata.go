@@ -1,9 +1,10 @@
 package types
 
 import (
-"encoding/json"
-"strconv"
-"beowulf-go/encoding/transaction"
+	"encoding/json"
+	"strconv"
+
+	"github.com/beowulf-foundation/beowulf-go/encoding/transaction"
 )
 
 type AccountMetadata struct {

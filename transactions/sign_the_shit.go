@@ -1,15 +1,16 @@
 package transactions
 
 import (
-	"beowulf-go/transactions/rfc6979"
 	"crypto/ecdsa"
 	"crypto/elliptic"
 	"crypto/sha256"
-	secp256k1 "github.com/btcsuite/btcd/btcec"
-	"github.com/pkg/errors"
 	"math/big"
 	"math/rand"
 	"time"
+
+	"github.com/beowulf-foundation/beowulf-go/transactions/rfc6979"
+	secp256k1 "github.com/btcsuite/btcd/btcec"
+	"github.com/pkg/errors"
 )
 
 //SignSingle signature of the transaction by one of the keys

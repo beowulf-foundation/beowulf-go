@@ -1,10 +1,6 @@
 package client
 
 import (
-	"beowulf-go/api"
-	"beowulf-go/config"
-	"beowulf-go/transactions"
-	"beowulf-go/types"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -12,6 +8,11 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/beowulf-foundation/beowulf-go/api"
+	"github.com/beowulf-foundation/beowulf-go/config"
+	"github.com/beowulf-foundation/beowulf-go/transactions"
+	"github.com/beowulf-foundation/beowulf-go/types"
 )
 
 func (client *Client) GetBlock(blockNum uint32) (*api.Block, error) {
@@ -78,6 +79,25 @@ func (client *Client) GetToken(name string) (*api.TokenInfo, error) {
 
 func (client *Client) GetBalance(account, tokenName string, decimals uint8) (*string, error) {
 	return client.API.GetBalance(account, tokenName, decimals)
+}
+
+func (client *Client) CommitScb(scid, committer, content, fee string) (*OperResp, error) {
+	validate := ValidateFee(fee, config.MIN_TRANSACTION_FEE)
+	if !validate {
+		return nil, errors.New("Fee is not valid")
+	}
+
+	var trx []types.Operation
+	tx := &types.ScbValidateOperation{
+		Committer:   committer,
+		Scid:        scid,
+		ScOperation: content,
+		Fee:         fee,
+	}
+
+	trx = append(trx, tx)
+	resp, err := client.SendTrx(trx, "")
+	return &OperResp{NameOper: "ScbValidate", Bresp: resp}, err
 }
 
 func (client *Client) GetNFTs(symbol string, limit, offset uint32) (*api.NFTList, error) {

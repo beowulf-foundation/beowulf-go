@@ -1,10 +1,11 @@
 package types
 
 import (
-	"beowulf-go/encoding/transaction"
 	"encoding/json"
 	"strconv"
 	"strings"
+
+	"github.com/beowulf-foundation/beowulf-go/encoding/transaction"
 )
 
 //Asset type from parameter JSON

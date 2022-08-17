@@ -1,7 +1,7 @@
 package api
 
 import (
-	"beowulf-go/types"
+	"github.com/beowulf-foundation/beowulf-go/types"
 )
 
 //BroadcastResponse structure for the BroadcastTransactionSynchronous function

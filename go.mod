@@ -1,4 +1,4 @@
-module beowulf-go
+module github.com/beowulf-foundation/beowulf-go
 
 go 1.18
 
