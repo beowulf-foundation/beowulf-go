@@ -81,17 +81,15 @@ func (client *Client) GetBalance(account, tokenName string, decimals uint8) (*st
 	return client.API.GetBalance(account, tokenName, decimals)
 }
 
-func (client *Client) CommitScb(scid, committer, content, fee string) (*OperResp, error) {
-	validate := ValidateFee(fee, config.MIN_TRANSACTION_FEE)
-	if !validate {
-		return nil, errors.New("Fee is not valid")
-	}
-
+func (client *Client) CommitScb(scid, committer, supernode, content, fee string) (*OperResp, error) {
 	var trx []types.Operation
+
 	tx := &types.ScbValidateOperation{
 		Committer:   committer,
+		Supernode:   supernode,
 		Scid:        scid,
 		ScOperation: content,
+		TimeCommit:  types.UInt32(time.Now().UTC().Unix()),
 		Fee:         fee,
 	}
 

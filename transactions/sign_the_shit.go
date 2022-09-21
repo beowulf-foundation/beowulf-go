@@ -21,10 +21,10 @@ func (tx *SignedTransaction) SignSingle(privB, data []byte) ([]byte, error) {
 	priv, _ := secp256k1.PrivKeyFromBytes(secp256k1.S256(), privKeyBytes[:])
 	priEcdsa := priv.ToECDSA()
 
-	return signBuffer(data, priEcdsa)
+	return SignBuffer(data, priEcdsa)
 }
 
-func signBuffer(buf []byte, privateKey *ecdsa.PrivateKey) ([]byte, error) {
+func SignBuffer(buf []byte, privateKey *ecdsa.PrivateKey) ([]byte, error) {
 	// Hash a message.
 	alg := sha256.New()
 	_, errAlg := alg.Write(buf)
@@ -33,7 +33,6 @@ func signBuffer(buf []byte, privateKey *ecdsa.PrivateKey) ([]byte, error) {
 	}
 
 	_hash := alg.Sum(nil)
-
 	return signBufferSha256(_hash, privateKey)
 }
 

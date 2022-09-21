@@ -7,8 +7,10 @@ import (
 //SmartContractOperation represents transfer operation data.
 type ScbValidateOperation struct {
 	Committer   string `json:"committer"`
+	Supernode   string `json:"supernode"`
 	Scid        string `json:"scid"`
 	ScOperation string `json:"sc_operation"`
+	TimeCommit  UInt32 `json:"time_commit"`
 	Fee         string `json:"fee"`
 }
 
@@ -29,8 +31,10 @@ func (op *ScbValidateOperation) MarshalTransaction(encoder *transaction.Encoder)
 	//enc.Encode(op.RequiredOwners)
 	// encode AccountAuths as map[string]uint16
 	enc.EncodeString(op.Committer)
+	enc.Encode(op.Supernode)
 	enc.Encode(op.Scid)
 	enc.Encode(op.ScOperation)
+	enc.Encode(op.TimeCommit)
 	enc.EncodeMoney(op.Fee)
 	//enc.Encode(op.Extensions)
 	//enc.EncodeUVarint(0)
