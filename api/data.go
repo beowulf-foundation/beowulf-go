@@ -119,18 +119,18 @@ type BlockHeader struct {
 
 //Block structure for the GetBlock function
 type Block struct {
-	Number                uint32               `json:"-"`
-	Previous              string               `json:"previous"`
-	Timestamp             *types.Time          `json:"timestamp"`
-	Supernode             string               `json:"supernode"`
-	TransactionMerkleRoot string               `json:"transaction_merkle_root"`
-	BlockReward           *types.Asset         `json:"block_reward"`
-	Extensions            [][]interface{}      `json:"extensions"`
-	SupernodeSignature    string               `json:"supernode_signature"`
-	Transactions          []*types.Transaction `json:"transactions"`
-	BlockId               string               `json:"block_id"`
-	PublicKeyType         string               `json:"signing_key"`
-	TransactionIds        []string             `json:"transaction_ids"`
+	Number                uint32                 `json:"-"`
+	Previous              string                 `json:"previous"`
+	Timestamp             *types.Time            `json:"timestamp"`
+	Supernode             string                 `json:"supernode"`
+	TransactionMerkleRoot string                 `json:"transaction_merkle_root"`
+	BlockReward           *types.Asset           `json:"block_reward"`
+	Extensions            [][]interface{}        `json:"extensions"`
+	SupernodeSignature    string                 `json:"supernode_signature"`
+	Transactions          []*TransactionResponse `json:"transactions"`
+	BlockId               string                 `json:"block_id"`
+	PublicKeyType         string                 `json:"signing_key"`
+	TransactionIds        []string               `json:"transaction_ids"`
 }
 
 //SupernodeSchedule structure for the GetSupernodeSchedule function
