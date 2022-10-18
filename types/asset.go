@@ -78,33 +78,6 @@ func (op *Asset) StringAmount() string {
 	return strconv.FormatFloat(op.Amount, 'f', 5, 64)
 }
 
-//UnmarshalJSON unpacking the JSON parameter in the AssetSymbol type.
-func (op *AssetSymbol) UnmarshalJSON(data []byte) error {
-	var raw AssetSymbol
-
-	str := string(data) //strconv.Unquote(string(data))
-	if str == "" {
-		return nil
-	}
-
-	if err := json.Unmarshal([]byte(str), &raw); err != nil {
-		return err
-	}
-
-	op.Decimals = raw.Decimals
-	op.AssetName = raw.AssetName
-	return nil
-}
-
-//MarshalJSON function for packing the AssetSymbol type in JSON.
-func (op *AssetSymbol) MarshalJSON() ([]byte, error) {
-	ans, err := json.Marshal(*op)
-	if err != nil {
-		return []byte{}, err
-	}
-	return ans, nil
-}
-
 //MarshalTransaction is a function of converting type AssetSymbol to bytes.
 func (op *AssetSymbol) MarshalTransaction(encoder *transaction.Encoder) error {
 	ans, err := json.Marshal(*op)

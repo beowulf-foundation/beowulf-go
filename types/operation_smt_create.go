@@ -6,13 +6,13 @@ import (
 
 //SmtCreateOperation represents transfer operation data.
 type SmtCreateOperation struct {
-	ControlAccount string          `json:"control_account"`
-	Symbol         *AssetSymbol    `json:"symbol"`
-	Creator        string          `json:"creator"`
 	SmtCreationFee string          `json:"smt_creation_fee"`
 	Precision      uint8           `json:"precision"`
 	Extensions     [][]interface{} `json:"extensions"`
+	ControlAccount string          `json:"control_account"`
+	Symbol         *AssetSymbol    `json:"symbol"`
 	MaxSupply      uint64          `json:"max_supply"`
+	Creator        string          `json:"creator"`
 }
 
 //Type function that defines the type of operation SmtCreateOperation.

@@ -9,6 +9,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+
 	// Vendor
 	"github.com/btcsuite/btcd/btcec"
 	"github.com/btcsuite/btcutil/base58"
